@@ -3,123 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PES 21 DATABASE - OFFICIAL</title>
+    <title>PES DB - Official Stats Layout</title>
     <style>
-        body { background: #0d0e12; color: #e0e0e0; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; }
-        .navbar { background: #1a1c23; padding: 15px; border-bottom: 3px solid #007bff; text-align: center; font-weight: bold; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
-        .container { max-width: 500px; margin: auto; }
+        body { background-color: #f4f4f4; color: #333; font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 10px; }
+        .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         
-        select { width: 100%; padding: 12px; background: #252836; color: white; border: 1px solid #444; border-radius: 5px; margin-bottom: 15px; font-size: 16px; border-left: 4px solid #007bff; }
-        
-        .player-list { background: #1a1c23; border-radius: 5px; border: 1px solid #333; margin-bottom: 20px; max-height: 180px; overflow-y: auto; }
-        .player-item { padding: 12px; border-bottom: 1px solid #333; cursor: pointer; display: flex; justify-content: space-between; font-weight: bold; font-size: 14px; }
-        .player-item:hover { background: #252836; }
+        select { width: 100%; padding: 12px; background: #fff; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 20px; font-size: 16px; outline: none; }
 
-        /* SCHEDA GIOCATORE */
-        .card { display: none; background: #1a1c23; border-radius: 10px; border: 1px solid #007bff; overflow: hidden; animation: slideIn 0.3s ease-out; }
-        
-        .header-main { display: flex; align-items: center; padding: 15px; background: linear-gradient(180deg, #1a1c23 0%, #0d0e12 100%); border-bottom: 1px solid #333; }
-        .player-photo { width: 100px; height: 100px; border-radius: 50%; border: 2px solid #007bff; object-fit: cover; margin-right: 15px; background: #252836; }
-        .player-title h2 { margin: 0; font-size: 20px; color: #fff; text-transform: uppercase; }
-        .player-title p { margin: 5px 0 0 0; color: #007bff; font-weight: bold; font-size: 14px; }
+        .player-list { border: 1px solid #eee; border-radius: 4px; margin-bottom: 20px; max-height: 150px; overflow-y: auto; }
+        .player-item { padding: 12px; border-bottom: 1px solid #eee; cursor: pointer; font-weight: bold; }
+        .player-item:hover { background-color: #f9f9f9; }
 
-        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 15px; background: #16181f; font-size: 12px; }
-        .info-item { color: #888; text-transform: uppercase; border-bottom: 1px solid #222; padding-bottom: 4px; }
-        .info-item span { color: #fff; font-weight: bold; display: block; font-size: 14px; margin-top: 2px; }
+        .player-card { display: none; text-align: center; }
+        .player-photo { width: 130px; height: 130px; border-radius: 50%; object-fit: cover; border: 3px solid #007bff; margin-bottom: 15px; background: #fafafa; }
+        .player-name { font-size: 24px; font-weight: bold; margin: 0 0 15px 0; text-transform: uppercase; color: #1a1a1a; }
 
-        .stats-container { padding: 10px 15px; }
-        .stat-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #222; font-size: 14px; align-items: center; }
-        
-        .val { font-weight: bold; padding: 2px 8px; border-radius: 3px; color: #000; min-width: 30px; text-align: center; font-family: 'Courier New', monospace; }
-        
-        /* COLORI PES 21 */
-        .c-cyan { background: #00FFFF; } .c-green { background: #00FF00; }
-        .c-yellow { background: #FFFF00; } .c-orange { background: #FF9900; }
-        .c-red { background: #FF0000; color: #fff; }
+        .bio-details { font-size: 14px; line-height: 1.8; color: #555; max-width: 350px; margin: 0 auto 25px auto; text-align: left; background: #fdfdfd; padding: 15px; border-radius: 6px; border: 1px solid #eee; display: grid; grid-template-columns: 1fr 1fr; }
+        .bio-details b { color: #222; }
+        .nat-icon { width: 22px; vertical-align: middle; margin-right: 5px; border: 1px solid #ddd; }
 
-        @keyframes slideIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .stats-list { text-align: left; max-width: 400px; margin: 0 auto; border-top: 2px solid #007bff; padding-top: 10px; }
+        .stat-item { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid #f2f2f2; font-size: 14px; font-weight: 500; }
+        
+        .val { font-weight: bold; font-family: monospace; font-size: 15px; padding: 2px 8px; border-radius: 4px; min-width: 30px; text-align: center; }
+        
+        /* SCALA COLORI UFFICIALE */
+        .c-red { color: white; background-color: #ff0000; }    /* 40-60 */
+        .c-orange { color: #222; background-color: #ffcc00; } /* 61-70 */
+        .c-yellow { color: #222; background-color: #ffff00; } /* 71-85 */
+        .c-green { color: white; background-color: #009900; }  /* 86-94 */
+        .c-cyan { color: white; background-color: #00ccff; }   /* 95-99 */
     </style>
 </head>
 <body>
 
-<div class="navbar">PES 21 DB - CONVERTED</div>
-
 <div class="container">
     <select id="teamSelect" onchange="caricaSquadra()">
-        <option value="">Scegli Squadra...</option>
+        <option value="">Seleziona Club...</option>
         <option value="Manchester City">Manchester City</option>
         <option value="Inter">Inter</option>
     </select>
 
     <div id="playerList" class="player-list"></div>
 
-    <div id="playerCard" class="card">
-        <div class="header-main">
-            <img id="pFoto" src="" class="player-photo" alt="Foto">
-            <div class="player-title">
-                <h2 id="pName"></h2>
-                <p id="pNaz">-</p>
-            </div>
-        </div>
+    <div id="playerCard" class="player-card">
+        <img id="pFoto" src="" alt="Foto" class="player-photo">
+        <h2 id="pName" class="player-name"></h2>
         
-        <div class="info-grid">
-            <div class="info-item">Ruolo <span id="pRuolo">-</span></div>
-            <div class="info-item">Età <span id="pEta">-</span></div>
-            <div class="info-item">Piede <span id="pPiede">-</span></div>
-            <div class="info-item">Altezza <span id="pAlt">-</span></div>
-            <div class="info-item">Peso <span id="pPeso">-</span></div>
-            <div class="info-item">Stile <span id="pStile">-</span></div>
+        <div class="bio-details">
+            <div><b>Nationality:</b> <img id="pNatIcon" src="" class="nat-icon"> <span id="pNatText"></span></div>
+            <div><b>Positions:</b> <span id="pPos"></span></div>
+            <div><b>Age:</b> <span id="pEta"></span></div>
+            <div><b>Height:</b> <span id="pAlt"></span></div>
+            <div><b>Weight:</b> <span id="pPeso"></span></div>
+            <div><b>Foot:</b> <span id="pPiede"></span></div>
         </div>
 
-        <div class="stats-container" id="statsContent"></div>
+        <div id="statsList" class="stats-list"></div>
     </div>
 </div>
 
 <script>
-// DATABASE CON VALORI GIÀ CONVERTITI (Esempio Haaland da eFootball 26 -> PES 21)
 const db = {
     "Manchester City": [
         { 
             nome: "E. HAALAND", 
-            foto: "https://assets.mancity.com/dist/images/players/men/erling-haaland.png", // Link immagine reale
-            naz: "Norvegia",
-            eta: 25, 
-            piede: "Sinistro", 
-            ruolo: "P", 
-            alt: "194 cm",
-            peso: "88 kg",
-            stile: "Uomo d'area",
+            foto: "https://pesdb.net/pes2021/images/players/133543.png", 
+            nazText: "NORWAY", 
+            nazIcon: "https://pesdb.net/pes2021/images/flags/NOR.png",
+            pos: "CF", eta: 20, alt: "194 cm", peso: "87 kg", piede: "Left foot",
             stats: {
-                "Consapevolezza Offensiva": 95,
-                "Controllo Palla": 79,
-                "Dribbling": 76,
-                "Finalizzazione": 98,
-                "Velocità": 92,
-                "Accelerazione": 85,
-                "Potenza di tiro": 93,
-                "Contatto Fisico": 96,
-                "Equilibrio": 74,
-                "Resistenza": 82
-            } 
+                "Offensive Awareness": 87, "Ball Control": 75, "Dribbling": 79, "Tight Possession": 76, "Low Pass": 74, "Lofted Pass": 61, "Finishing": 91, "Heading": 72, "Place Kicking": 72, "Curl": 71, "Speed": 90, "Acceleration": 84, "Kicking Power": 95, "Jump": 86, "Physical Contact": 88, "Balance": 67, "Stamina": 80, "Defensive Awareness": 51, "Ball Winning": 59, "Aggression": 78, 
+                "Awareness GK": 40, "Catching GK": 40, "Clearing GK": 40, "Reflexes GK": 40, "Reach": 40, 
+                "Weak Foot Usage": 1, "Weak Foot Accuracy": 3, "Form": 6, "Injury Resistance": 1
+            }
         }
     ],
     "Inter": [
-        { 
-            nome: "L. MARTÍNEZ", 
-            foto: "https://www.inter.it/img/963852-500.png",
-            naz: "Argentina",
-            eta: 28, 
-            piede: "Destro", 
-            ruolo: "P", 
-            alt: "174 cm",
-            peso: "72 kg",
-            stile: "Rapace d'area",
+        {
+            nome: "YANN SOMMER",
+            foto: "https://pesdb.net/pes2021/images/players/38568.png",
+            nazText: "SWITZERLAND",
+            nazIcon: "https://pesdb.net/pes2021/images/flags/SUI.png",
+            pos: "GK", eta: 37, alt: "183 cm", peso: "79 kg", piede: "Right foot",
             stats: {
-                "Consapevolezza Offensiva": 91,
-                "Finalizzazione": 89,
-                "Velocità": 84,
-                "Contatto Fisico": 85,
-                "Resistenza": 88
+                "Offensive Awareness": 40, "Ball Control": 65, "Dribbling": 55, "Tight Possession": 58, "Low Pass": 70, "Lofted Pass": 72, "Finishing": 40, "Heading": 55, "Place Kicking": 50, "Curl": 55, "Speed": 62, "Acceleration": 65, "Kicking Power": 78, "Jump": 84, "Physical Contact": 75, "Balance": 70, "Stamina": 68, "Defensive Awareness": 91, "Ball Winning": 60, "Aggression": 65, 
+                "Awareness GK": 91, "Catching GK": 88, "Clearing GK": 86, "Reflexes GK": 93, "Reach": 87, 
+                "Weak Foot Usage": 2, "Weak Foot Accuracy": 2, "Form": 7, "Injury Resistance": 3
             }
         }
     ]
@@ -132,7 +102,7 @@ function caricaSquadra() {
     list.innerHTML = "";
     if(db[team]) {
         db[team].forEach((p, i) => {
-            list.innerHTML += `<div class="player-item" onclick="mostraStat('${team}', ${i})">${p.nome} <span>➔</span></div>`;
+            list.innerHTML += `<div class="player-item" onclick="mostraStat('${team}', ${i})">${p.nome}</div>`;
         });
     }
 }
@@ -141,23 +111,5 @@ function mostraStat(team, i) {
     const p = db[team][i];
     document.getElementById('pName').innerText = p.nome;
     document.getElementById('pFoto').src = p.foto;
-    document.getElementById('pNaz').innerText = p.naz;
-    document.getElementById('pRuolo').innerText = p.ruolo;
-    document.getElementById('pEta').innerText = p.eta;
-    document.getElementById('pPiede').innerText = p.piede;
-    document.getElementById('pAlt').innerText = p.alt;
-    document.getElementById('pPeso').innerText = p.peso;
-    document.getElementById('pStile').innerText = p.stile;
-    
-    let html = "";
-    for(let s in p.stats) {
-        let v = p.stats[s];
-        let cl = v >= 95 ? "c-cyan" : v >= 86 ? "c-green" : v >= 71 ? "c-yellow" : v >= 61 ? "c-orange" : "c-red";
-        html += `<div class="stat-row"><span>${s}</span><span class="val ${cl}">${v}</span></div>`;
-    }
-    document.getElementById('statsContent').innerHTML = html;
-    document.getElementById('playerCard').style.display = 'block';
-}
-</script>
-</body>
-</html>
+    document.getElementById('pNatText').innerText = p.nazText;
+    document.getElementById('pNatIcon').src = p.nazIcon;
