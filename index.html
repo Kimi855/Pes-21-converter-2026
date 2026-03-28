@@ -3,65 +3,140 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PES6 Database Clone</title>
+    <title>PES6 DATABASE CLONE</title>
     <style>
-        body { background: #0d0e12; color: #e0e0e0; font-family: sans-serif; margin: 0; padding: 10px; }
-        .navbar { background: #1a1c23; padding: 15px; border-bottom: 3px solid #007bff; text-align: center; font-weight: bold; margin-bottom: 10px; }
-        .filter-box { background: #1a1c23; padding: 15px; border-radius: 5px; margin-bottom: 10px; border: 1px solid #333; }
-        input { width: 100%; padding: 12px; margin: 5px 0; background: #252836; color: white; border: 1px solid #444; border-radius: 4px; box-sizing: border-box; }
-        .player-card { display: none; background: #1a1c23; padding: 20px; border-radius: 8px; border: 2px solid #007bff; margin-top: 20px; }
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-top: 15px; }
-        .stat-item { display: flex; justify-content: space-between; background: #11131a; padding: 8px; border-radius: 3px; font-size: 14px; border: 1px solid #222; }
-        .val { font-weight: bold; padding: 2px 6px; border-radius: 3px; color: #000; min-width: 30px; text-align: center; }
-        /* LA TUA SCALA COLORI */
-        .c-red { background: #FF0000; color: white; }    /* 40-60 */
-        .c-orange { background: #FF9900; }             /* 61-70 */
-        .c-yellow { background: #FFFF00; }             /* 71-85 */
-        .c-green { background: #00FF00; }              /* 86-94 */
-        .c-cyan { background: #00FFFF; }               /* 95-99 */
+        /* STILE DARK DATABASE */
+        body { background: #0d0e12; color: #e0e0e0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 10px; }
+        .navbar { background: #1a1c23; padding: 15px; border-bottom: 3px solid #007bff; text-align: center; font-weight: bold; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        .container { max-width: 600px; margin: auto; }
+        
+        /* BOX DI RICERCA */
+        .search-box { background: #1a1c23; padding: 15px; border-radius: 5px; border: 1px solid #333; margin-bottom: 15px; }
+        label { display: block; margin-bottom: 8px; font-size: 13px; color: #888; }
+        input { width: 100%; padding: 12px; background: #252836; color: white; border: 1px solid #444; border-radius: 4px; box-sizing: border-box; font-size: 16px; outline: none; }
+        input:focus { border-color: #007bff; }
+
+        /* SCHEDA GIOCATORE */
+        .player-card { display: none; background: #1a1c23; padding: 20px; border-radius: 8px; border: 1px solid #007bff; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        .player-name { margin: 0 0 15px 0; color: #fff; text-transform: uppercase; font-size: 22px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        
+        /* GRIGLIA STATISTICHE */
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+        .stat-item { display: flex; justify-content: space-between; align-items: center; background: #11131a; padding: 8px 12px; border-radius: 3px; font-size: 14px; border: 1px solid #222; }
+        
+        /* LA TUA SCALA COLORI 40-99 */
+        .val { font-weight: bold; padding: 2px 8px; border-radius: 3px; color: #000; min-width: 30px; text-align: center; font-size: 15px; }
+        .c-cyan { background: #00FFFF; }               /* 95-99: Verde Acqua */
+        .c-green { background: #00FF00; }              /* 86-94: Verde */
+        .c-yellow { background: #FFFF00; }             /* 71-85: Giallo */
+        .c-orange { background: #FF9900; }             /* 61-70: Arancione */
+        .c-red { background: #FF0000; color: white; }    /* 40-60: Rosso */
+
+        #loader { display: none; text-align: center; padding: 20px; color: #007bff; font-weight: bold; font-style: italic; }
     </style>
 </head>
 <body>
-<div class="navbar">PES6 DATABASE CLONE</div>
-<div class="filter-box">
-    <input type="text" id="pId" placeholder="Incolla ID pesdb (es. 108657)" onchange="loadPlayer(this.value)">
+
+<div class="navbar">PES6 Database Clone</div>
+
+<div class="container">
+    <div class="search-box">
+        <label>INSERISCI ID PESDB E PREMI INVIO:</label>
+        <input type="number" id="manualId" placeholder="Es. 108657" onchange="loadPlayer(this.value)">
+    </div>
+
+    <div id="loader">Caricamento dati da pesdb...</div>
+
+    <div id="playerCard" class="player-card">
+        <h2 id="pName" class="player-name">-</h2>
+        <div class="stats-grid" id="statsList"></div>
+    </div>
 </div>
-<div id="loader" style="display:none; text-align:center; padding:10px; color:#007bff;">⏳ Conversione in corso...</div>
-<div id="playerCard" class="player-card">
-    <h2 id="pName" style="margin:0; color:#fff; text-transform:uppercase;">-</h2>
-    <div class="stats-grid" id="statsList"></div>
-</div>
+
 <script>
 async function loadPlayer(id) {
     if(!id) return;
-    document.getElementById('loader').style.display = "block";
+    const loader = document.getElementById('loader');
+    const card = document.getElementById('playerCard');
+    
+    loader.style.display = "block";
+    card.style.display = "none";
+
+    const targetUrl = `https://pesdb.net/efootball/?id=${id}`;
+    // Usiamo AllOrigins come proxy principale
+    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`;
+
     try {
-        const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent('https://pesdb.net/efootball/?id=' + id)}`);
-        const json = await res.json();
-        const doc = new DOMParser().parseFromString(json.contents, 'text/html');
-        document.getElementById('pName').innerText = doc.querySelector('.player_table td:nth-child(2)').innerText;
-        let html = "";
-        doc.querySelectorAll('tr').forEach(r => {
-            const c = r.querySelectorAll('td');
-            if(c.length >= 2) {
-                const sName = c[0].innerText.trim();
-                const sVal = parseInt(c[1].innerText);
-                if(!isNaN(sVal) && sVal >= 40) {
-                    let pVal = sVal > 90 ? Math.floor(sVal * 0.94) : Math.floor(sVal * 0.96);
-                    if(sName.includes("Physical")) pVal += 7;
-                    if(sName.includes("Speed")) pVal -= 2;
-                    pVal = Math.min(99, pVal);
-                    let col = "c-red";
-                    if(pVal >= 95) col = "c-cyan"; else if(pVal >= 86) col = "c-green"; else if(pVal >= 71) col = "c-yellow"; else if(pVal >= 61) col = "c-orange";
-                    html += `<div class="stat-item"><span>${sName}</span><span class="val ${col}">${pVal}</span></div>`;
+        const response = await fetch(proxyUrl);
+        if (!response.ok) throw new Error('Network response was not ok');
+        const data = await response.json();
+        
+        if(!data.contents) {
+            alert("Giocatore non trovato o errore server.");
+            loader.style.display = "none";
+            return;
+        }
+
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(data.contents, 'text/html');
+
+        // Estrazione Nome
+        const nameNode = doc.querySelector('.player_table td:nth-child(2)');
+        if(!nameNode) {
+            alert("ID non valido.");
+            loader.style.display = "none";
+            return;
+        }
+        document.getElementById('pName').innerText = nameNode.innerText;
+
+        // Estrazione Statistiche
+        let statsHtml = "";
+        const rows = doc.querySelectorAll('tr');
+        
+        rows.forEach(row => {
+            const cols = row.querySelectorAll('td');
+            if(cols.length >= 2) {
+                const statName = cols[0].innerText.trim();
+                const statValRaw = parseInt(cols[1].innerText);
+
+                if(!isNaN(statValRaw) && statValRaw >= 40) {
+                    // TUA LOGICA DI CONVERSIONE PES 21
+                    let convertedVal = statValRaw > 90 ? Math.floor(statValRaw * 0.94) : Math.floor(statValRaw * 0.96);
+                    
+                    // Correzioni specifiche chieste
+                    if(statName.includes("Physical")) convertedVal += 7;
+                    if(statName.includes("Speed")) convertedVal -= 2;
+                    
+                    // Limite massimo 99
+                    convertedVal = Math.min(99, convertedVal);
+
+                    // TUA SCALA COLORI
+                    let colorClass = "c-red";
+                    if(convertedVal >= 95) colorClass = "c-cyan";
+                    else if(convertedVal >= 86) colorClass = "c-green";
+                    else if(convertedVal >= 71) colorClass = "c-yellow";
+                    else if(convertedVal >= 61) colorClass = "c-orange";
+
+                    statsHtml += `
+                        <div class="stat-item">
+                            <span>${statName}</span>
+                            <span class="val ${colorClass}">${convertedVal}</span>
+                        </div>`;
                 }
             }
         });
-        document.getElementById('statsList').innerHTML = html;
-        document.getElementById('playerCard').style.display = "block";
-    } catch (e) { alert("Errore caricamento."); }
-    document.getElementById('loader').style.display = "none";
+
+        document.getElementById('statsList').innerHTML = statsHtml;
+        card.style.display = "block";
+        
+    } catch (error) {
+        console.error("Errore:", error);
+        alert("Errore di connessione. Riprova tra pochi secondi.");
+    } finally {
+        loader.style.display = "none";
+    }
 }
 </script>
+
 </body>
 </html>
