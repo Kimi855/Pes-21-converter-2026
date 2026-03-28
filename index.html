@@ -3,117 +3,167 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PES DB 2026 - COMPLETE EDITION</title>
+    <title>PES 2026 COMPLETE DATABASE</title>
     <style>
-        body { background-color: #f0f2f5; color: #333; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; }
-        .container { max-width: 650px; margin: auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        .navbar { background: #1a1a1a; color: #00ffcc; padding: 15px; border-radius: 8px; text-align: center; font-weight: bold; margin-bottom: 20px; text-transform: uppercase; }
+        :root { --bg: #0b0c10; --card: #1f2833; --cyan: #66fcf1; --blue: #45a29e; --text: #c5c6c7; }
+        body { background-color: var(--bg); color: var(--text); font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 10px; }
+        .container { max-width: 700px; margin: auto; }
         
-        .controls { display: flex; gap: 10px; margin-bottom: 15px; }
-        select { flex: 1; padding: 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; background: #fff; }
+        .header { background: linear-gradient(135deg, #1f2833 0%, #0b0c10 100%); padding: 20px; border-radius: 10px; border: 1px solid var(--blue); text-align: center; margin-bottom: 20px; }
+        .header h1 { margin: 0; color: var(--cyan); font-size: 22px; text-transform: uppercase; letter-spacing: 2px; }
 
-        .player-list { border: 1px solid #ddd; border-radius: 6px; margin-bottom: 20px; max-height: 200px; overflow-y: auto; background: #fafafa; }
-        .player-item { padding: 12px; border-bottom: 1px solid #eee; cursor: pointer; font-weight: 600; display: flex; justify-content: space-between; }
-        .player-item:hover { background-color: #eef6ff; }
+        /* CONTROLLI TIPO PES6DB */
+        .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        select, input { padding: 12px; background: var(--card); color: #fff; border: 1px solid var(--blue); border-radius: 5px; font-size: 14px; outline: none; }
+        input { grid-column: span 2; }
 
-        .player-card { display: none; border-top: 3px solid #007bff; padding-top: 20px; }
-        .card-top { display: flex; align-items: center; justify-content: center; margin-bottom: 20px; position: relative; }
-        .player-photo { width: 140px; height: 140px; border-radius: 50%; object-fit: cover; border: 4px solid #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
-        .overall-badge { position: absolute; bottom: 0; right: 35%; width: 45px; height: 45px; background: #1a1a1a; color: #00ffcc; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 2px solid #fff; }
+        .player-list { background: var(--card); border-radius: 8px; max-height: 250px; overflow-y: auto; border: 1px solid #333; }
+        .player-item { padding: 10px 15px; border-bottom: 1px solid #0b0c10; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: 0.3s; }
+        .player-item:hover { background: var(--blue); color: #000; }
+        .ovr-tag { background: #000; color: var(--cyan); padding: 2px 8px; border-radius: 4px; font-weight: bold; font-family: monospace; }
 
-        .player-name { font-size: 26px; font-weight: 800; text-transform: uppercase; text-align: center; margin: 10px 0; }
-        .bio-details { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: #f9f9f9; padding: 15px; border-radius: 8px; font-size: 13px; margin-bottom: 20px; }
-        .nat-icon { width: 20px; vertical-align: middle; margin-right: 5px; }
+        /* SCHEDA GIOCATORE */
+        .player-card { display: none; background: var(--card); border-radius: 10px; padding: 20px; margin-top: 20px; border: 1px solid var(--cyan); position: relative; animation: slideUp 0.4s ease; }
+        .photo-section { text-align: center; margin-bottom: 20px; }
+        .p-img { width: 150px; height: 150px; border-radius: 50%; border: 3px solid var(--cyan); background: #000; object-fit: cover; }
+        .p-ovr-big { position: absolute; top: 20px; right: 20px; width: 60px; height: 60px; background: #000; border: 2px solid var(--cyan); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; color: var(--cyan); font-weight: bold; }
 
-        .stats-grid { display: grid; grid-template-columns: 1fr; gap: 2px; }
-        .stat-item { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; background: #fff; border-bottom: 1px solid #f0f0f0; font-size: 14px; }
-        .val { font-weight: bold; font-family: monospace; font-size: 15px; padding: 2px 0; width: 35px; text-align: center; border-radius: 4px; }
+        .p-name { font-size: 26px; text-align: center; color: #fff; margin: 10px 0; text-transform: uppercase; }
         
-        .c-red { background-color: #ff4d4d; color: white; }
-        .c-orange { background-color: #ffaa00; }
-        .c-yellow { background-color: #ffff4d; }
-        .c-green { background-color: #44cc44; color: white; }
-        .c-cyan { background-color: #00ccff; color: white; }
+        .bio-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 13px; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        .bio-item b { color: var(--cyan); margin-right: 5px; }
+        .flag { width: 20px; vertical-align: middle; margin-right: 5px; }
+
+        .stats-table { width: 100%; border-collapse: collapse; }
+        .stat-row { display: flex; justify-content: space-between; padding: 6px 10px; border-bottom: 1px solid #2c3531; }
+        .stat-val { font-weight: bold; width: 35px; text-align: center; border-radius: 3px; color: #000; font-family: monospace; }
+
+        /* COLORI STATS */
+        .c95 { background: #00ffff; } .c86 { background: #00ff00; } 
+        .c71 { background: #ffff00; } .c61 { background: #ffaa00; } .c40 { background: #ff4d4d; color: #fff; }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="navbar">eFootball 2026 Database</div>
-    
+    <div class="header"><h1>PES 2026 DATABASE</h1></div>
+
     <div class="controls">
-        <select id="teamSelect" onchange="caricaSquadra()">
-            <option value="">Caricamento database...</option>
+        <input type="text" id="searchInput" placeholder="Cerca giocatore per nome..." onkeyup="filtraGiocatori()">
+        <select id="teamSelect" onchange="filtraGiocatori()">
+            <option value="">Tutte le squadre</option>
+            <option value="Inter">Inter</option>
+            <option value="Juventus">Juventus</option>
+            <option value="Milan">Milan</option>
+            <option value="Napoli">Napoli</option>
+            <option value="Atalanta">Atalanta</option>
+            <option value="Roma">Roma</option>
+            <option value="Manchester City">Manchester City</option>
+            <option value="Arsenal">Arsenal</option>
+            <option value="Liverpool">Liverpool</option>
+            <option value="Real Madrid">Real Madrid</option>
+            <option value="Barcelona">Barcelona</option>
+            <option value="Bayern Munchen">Bayern München</option>
+            <option value="PSG">PSG</option>
+            <option value="Bayer Leverkusen">Bayer Leverkusen</option>
+        </select>
+        <select id="posSelect" onchange="filtraGiocatori()">
+            <option value="">Tutti i ruoli</option>
+            <option value="GK">GK</option>
+            <option value="CB">CB</option>
+            <option value="DMF">DMF</option>
+            <option value="CMF">CMF</option>
+            <option value="AMF">AMF</option>
+            <option value="LWF">LWF</option>
+            <option value="RWF">RWF</option>
+            <option value="CF">CF</option>
         </select>
     </div>
 
     <div id="playerList" class="player-list"></div>
 
     <div id="playerCard" class="player-card">
-        <div class="card-top">
-            <img id="pFoto" src="" alt="Player" class="player-photo">
-            <div id="pOverall" class="overall-badge">--</div>
-        </div>
-        <h2 id="pName" class="player-name"></h2>
-        <div class="bio-details" id="bioBox"></div>
-        <div id="statsList" class="stats-grid"></div>
+        <div id="pOverallBig" class="p-ovr-big">--</div>
+        <div class="photo-section"><img id="pFoto" src="" class="p-img"></div>
+        <h2 id="pName" class="p-name"></h2>
+        <div id="bioContent" class="bio-grid"></div>
+        <div id="statsContent" class="stats-table"></div>
     </div>
 </div>
 
 <script>
-let globalDB = {};
+// DATABASE MASSIVO - Qui inseriremo tutti i giocatori
+const players = [
+    // INTER
+    { nome: "LAUTARO MARTÍNEZ", team: "Inter", overall: 92, id: "108657", naz: "ARGENTINA", flag: "ARG", pos: "CF", eta: 28, dim: "174cm / 72kg", piede: "Right", stile: "Goal Poacher", stats: {"Offensive Awareness": 93, "Ball Control": 86, "Dribbling": 84, "Tight Possession": 85, "Low Pass": 78, "Lofted Pass": 70, "Finishing": 92, "Heading": 88, "Place Kicking": 72, "Curl": 75, "Speed": 84, "Acceleration": 86, "Kicking Power": 85, "Jump": 90, "Physical Contact": 86, "Balance": 88, "Stamina": 89, "Defensive Awareness": 52, "Ball Winning": 60, "Aggression": 84, "Awareness GK": 40, "Catching GK": 40, "Clearing GK": 40, "Reflexes GK": 40, "Reach": 40, "Weak Foot Usage": 3, "Weak Foot Accuracy": 3, "Form": 7, "Injury Resistance": 3}},
+    { nome: "N. BARELLA", team: "Inter", overall: 90, id: "108653", naz: "ITALY", flag: "ITA", pos: "CMF", eta: 29, dim: "172cm / 68kg", piede: "Right", stile: "Box-to-Box", stats: {"Offensive Awareness": 82, "Ball Control": 88, "Dribbling": 86, "Tight Possession": 89, "Low Pass": 90, "Lofted Pass": 86, "Finishing": 75, "Heading": 68, "Place Kicking": 72, "Curl": 75, "Speed": 82, "Acceleration": 85, "Kicking Power": 82, "Jump": 78, "Physical Contact": 74, "Balance": 91, "Stamina": 96, "Defensive Awareness": 78, "Ball Winning": 82, "Aggression": 88, "Awareness GK": 40, "Catching GK": 40, "Clearing GK": 40, "Reflexes GK": 40, "Reach": 40, "Weak Foot Usage": 3, "Weak Foot Accuracy": 3, "Form": 8, "Injury Resistance": 3}},
+    { nome: "A. BASTONI", team: "Inter", overall: 89, id: "114061", naz: "ITALY", flag: "ITA", pos: "CB", eta: 26, dim: "190cm / 75kg", piede: "Left", stile: "Build Up", stats: {"Offensive Awareness": 65, "Ball Control": 84, "Dribbling": 78, "Tight Possession": 75, "Low Pass": 89, "Lofted Pass": 91, "Finishing": 60, "Heading": 82, "Place Kicking": 65, "Curl": 78, "Speed": 78, "Acceleration": 75, "Kicking Power": 80, "Jump": 84, "Physical Contact": 88, "Balance": 72, "Stamina": 85, "Defensive Awareness": 90, "Ball Winning": 88, "Aggression": 82, "Awareness GK": 40, "Catching GK": 40, "Clearing GK": 40, "Reflexes GK": 40, "Reach": 40, "Weak Foot Usage": 2, "Weak Foot Accuracy": 2, "Form": 7, "Injury Resistance": 2}},
+    
+    // CITY
+    { nome: "E. HAALAND", team: "Manchester City", overall: 96, id: "133543", naz: "NORWAY", flag: "NOR", pos: "CF", eta: 25, dim: "194cm / 87kg", piede: "Left", stile: "Goal Poacher", stats: {"Offensive Awareness": 96, "Ball Control": 81, "Dribbling": 78, "Tight Possession": 77, "Low Pass": 72, "Lofted Pass": 65, "Finishing": 98, "Heading": 85, "Place Kicking": 70, "Curl": 68, "Speed": 95, "Acceleration": 88, "Kicking Power": 97, "Jump": 88, "Physical Contact": 97, "Balance": 72, "Stamina": 84, "Defensive Awareness": 48, "Ball Winning": 52, "Aggression": 75, "Awareness GK": 40, "Catching GK": 40, "Clearing GK": 40, "Reflexes GK": 40, "Reach": 40, "Weak Foot Usage": 2, "Weak Foot Accuracy": 3, "Form": 7, "Injury Resistance": 2}},
+    { nome: "RODRI", team: "Manchester City", overall: 95, id: "114915", naz: "SPAIN", flag: "ESP", pos: "DMF", eta: 29, dim: "191cm / 82kg", piede: "Right", stile: "Orchestrator", stats: {"Offensive Awareness": 82, "Ball Control": 90, "Dribbling": 82, "Tight Possession": 88, "Low Pass": 96, "Lofted Pass": 92, "Finishing": 78, "Heading": 86, "Place Kicking": 70, "Curl": 76, "Speed": 77, "Acceleration": 75, "Kicking Power": 90, "Jump": 82, "Physical Contact": 93, "Balance": 80, "Stamina": 95, "Defensive Awareness": 91, "Ball Winning": 93, "Aggression": 86, "Awareness GK": 40, "Catching GK": 40, "Clearing GK": 40, "Reflexes GK": 40, "Reach": 40, "Weak Foot Usage": 3, "Weak Foot Accuracy": 3, "Form": 8, "Injury Resistance": 3}},
 
-// Carica il database da un file esterno (database.json)
-fetch('database.json')
-    .then(response => response.json())
-    .then(data => {
-        globalDB = data;
-        const select = document.getElementById('teamSelect');
-        select.innerHTML = '<option value="">-- Seleziona Squadra --</option>';
-        Object.keys(data).sort().forEach(team => {
-            select.innerHTML += `<option value="${team}">${team}</option>`;
-        });
-    });
+    // MADRID
+    { nome: "K. MBAPPÉ", team: "Real Madrid", overall: 97, id: "110718", naz: "FRANCE", flag: "FRA", pos: "CF", eta: 27, dim: "178cm / 75kg", piede: "Right", stile: "Goal Poacher", stats: {"Offensive Awareness": 95, "Ball Control": 91, "Dribbling": 96, "Tight Possession": 92, "Low Pass": 83, "Lofted Pass": 78, "Finishing": 96, "Heading": 74, "Place Kicking": 78, "Curl": 85, "Speed": 98, "Acceleration": 97, "Kicking Power": 89, "Jump": 83, "Physical Contact": 78, "Balance": 91, "Stamina": 86, "Defensive Awareness": 40, "Ball Winning": 42, "Aggression": 50, "Awareness GK": 40, "Catching GK": 40, "Clearing GK": 40, "Reflexes GK": 40, "Reach": 40, "Weak Foot Usage": 3, "Weak Foot Accuracy": 3, "Form": 7, "Injury Resistance": 3}},
+    { nome: "JUDE BELLINGHAM", team: "Real Madrid", overall: 94, id: "135245", naz: "ENGLAND", flag: "ENG", pos: "AMF", eta: 22, dim: "186cm / 75kg", piede: "Right", stile: "Hole Player", stats: {"Offensive Awareness": 90, "Ball Control": 92, "Dribbling": 90, "Tight Possession": 88, "Low Pass": 91, "Lofted Pass": 85, "Finishing": 88, "Heading": 82, "Place Kicking": 75, "Curl": 80, "Speed": 84, "Acceleration": 85, "Kicking Power": 86, "Jump": 84, "Physical Contact": 86, "Balance": 85, "Stamina": 92, "Defensive Awareness": 78, "Ball Winning": 82, "Aggression": 85, "Awareness GK": 40, "Catching GK": 40, "Clearing GK": 40, "Reflexes GK": 40, "Reach": 40, "Weak Foot Usage": 3, "Weak Foot Accuracy": 3, "Form": 7, "Injury Resistance": 3}},
 
-function caricaSquadra() {
+    // BARCELONA
+    { nome: "LAMINE YAMAL", team: "Barcelona", overall: 90, id: "163351", naz: "SPAIN", flag: "ESP", pos: "RWF", eta: 18, dim: "178cm / 68kg", piede: "Left", stile: "Roaming Flank", stats: {"Offensive Awareness": 85, "Ball Control": 92, "Dribbling": 95, "Tight Possession": 93, "Low Pass": 86, "Lofted Pass": 85, "Finishing": 82, "Heading": 58, "Place Kicking": 78, "Curl": 88, "Speed": 89, "Acceleration": 93, "Kicking Power": 78, "Jump": 65, "Physical Contact": 62, "Balance": 92, "Stamina": 80, "Defensive Awareness": 45, "Ball Winning": 48, "Aggression": 55, "Awareness GK": 40, "Catching GK": 40, "Clearing GK": 40, "Reflexes GK": 40, "Reach": 40, "Weak Foot Usage": 2, "Weak Foot Accuracy": 2, "Form": 6, "Injury Resistance": 2}}
+];
+
+const statsOrder = ["Offensive Awareness", "Ball Control", "Dribbling", "Tight Possession", "Low Pass", "Lofted Pass", "Finishing", "Heading", "Place Kicking", "Curl", "Speed", "Acceleration", "Kicking Power", "Jump", "Physical Contact", "Balance", "Stamina", "Defensive Awareness", "Ball Winning", "Aggression", "Awareness GK", "Catching GK", "Clearing GK", "Reflexes GK", "Reach", "Weak Foot Usage", "Weak Foot Accuracy", "Form", "Injury Resistance"];
+
+function filtraGiocatori() {
+    const search = document.getElementById('searchInput').value.toLowerCase();
     const team = document.getElementById('teamSelect').value;
+    const pos = document.getElementById('posSelect').value;
     const list = document.getElementById('playerList');
-    document.getElementById('playerCard').style.display = 'none';
     list.innerHTML = "";
-    if(globalDB[team]) {
-        globalDB[team].forEach((p, i) => {
-            list.innerHTML += `<div class="player-item" onclick="mostraStat('${team}', ${i})">${p.nome} <span style="color:#007bff">${p.overall}</span></div>`;
-        });
-    }
+
+    const filtered = players.filter(p => {
+        return (p.nome.toLowerCase().includes(search)) && 
+               (team === "" || p.team === team) && 
+               (pos === "" || p.pos === pos);
+    }).sort((a,b) => b.overall - a.overall);
+
+    filtered.forEach(p => {
+        const div = document.createElement('div');
+        div.className = 'player-item';
+        div.innerHTML = `<span>${p.nome} <small style="color:var(--blue)">(${p.team})</small></span> <span class="ovr-tag">${p.overall}</span>`;
+        div.onclick = () => mostraScheda(p);
+        list.appendChild(div);
+    });
 }
 
-function mostraStat(team, i) {
-    const p = globalDB[team][i];
-    const order = ["Offensive Awareness", "Ball Control", "Dribbling", "Tight Possession", "Low Pass", "Lofted Pass", "Finishing", "Heading", "Place Kicking", "Curl", "Speed", "Acceleration", "Kicking Power", "Jump", "Physical Contact", "Balance", "Stamina", "Defensive Awareness", "Ball Winning", "Aggression", "Awareness GK", "Catching GK", "Clearing GK", "Reflexes GK", "Reach", "Weak Foot Usage", "Weak Foot Accuracy", "Form", "Injury Resistance"];
-
+function mostraScheda(p) {
+    document.getElementById('playerCard').style.display = 'block';
     document.getElementById('pName').innerText = p.nome;
-    document.getElementById('pOverall').innerText = p.overall;
+    document.getElementById('pOverallBig').innerText = p.overall;
     document.getElementById('pFoto').src = `https://pesdb.net/pes2021/images/players/${p.id}.png`;
     
-    document.getElementById('bioBox').innerHTML = `
-        <div><b>Nationality:</b> <img src="https://pesdb.net/pes2021/images/flags/${p.flag}.png" class="nat-icon"> ${p.naz}</div>
-        <div><b>Position:</b> ${p.pos}</div>
-        <div><b>Age:</b> ${p.eta}</div>
-        <div><b>Dim:</b> ${p.dim}</div>
-        <div><b>Foot:</b> ${p.piede}</div>
-        <div><b>Style:</b> ${p.stile}</div>
+    document.getElementById('bioContent').innerHTML = `
+        <div class="bio-item"><b>Nationality:</b> <img src="https://pesdb.net/pes2021/images/flags/${p.flag}.png" class="flag"> ${p.naz}</div>
+        <div class="bio-item"><b>Position:</b> ${p.pos}</div>
+        <div class="bio-item"><b>Age:</b> ${p.eta}</div>
+        <div class="bio-item"><b>Size:</b> ${p.dim}</div>
+        <div class="bio-item"><b>Foot:</b> ${p.piede}</div>
+        <div class="bio-item"><b>Style:</b> ${p.stile}</div>
     `;
 
     let html = "";
-    order.forEach(s => {
+    statsOrder.forEach(s => {
         let v = p.stats[s];
-        let cl = v >= 95 ? "c-cyan" : v >= 86 ? "c-green" : v >= 71 ? "c-yellow" : v >= 61 ? "c-orange" : "c-red";
-        html += `<div class="stat-item"><span>${s}</span><span class="val ${cl}">${v}</span></div>`;
+        let cl = v >= 95 ? "c95" : v >= 86 ? "c86" : v >= 71 ? "c71" : v >= 61 ? "c61" : "c40";
+        html += `<div class="stat-row"><span>${s}</span><span class="stat-val ${cl}">${v}</span></div>`;
     });
-    
-    document.getElementById('statsList').innerHTML = html;
-    document.getElementById('playerCard').style.display = 'block';
+    document.getElementById('statsContent').innerHTML = html;
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
 }
+
+// Inizializza lista
+filtraGiocatori();
 </script>
 </body>
 </html>
