@@ -2,142 +2,109 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>PES DATABASE 2026</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PES 21 Stats Database</title>
     <style>
-        :root { --bg: #0b0e14; --card: #151921; --cyan: #00ffff; --green: #00ff00; --yellow: #ffff00; --orange: #ffaa00; --red: #ff4d4d; --text: #e0e0e0; }
-        body { background: var(--bg); color: var(--text); font-family: 'Roboto', sans-serif; margin: 0; padding: 10px; }
+        :root { --bg: #0d1117; --card: #161b22; --cyan: #00ffff; --green: #00ff00; --yellow: #ffff00; --orange: #ffaa00; --red: #ff4d4d; }
+        body { background: var(--bg); color: white; font-family: sans-serif; padding: 10px; margin: 0; }
         
-        .header-title { text-align: center; color: var(--cyan); font-size: 28px; font-weight: 900; text-transform: uppercase; margin: 20px 0; letter-spacing: 2px; }
+        /* Input Area Mobile */
+        .controls { background: var(--card); padding: 15px; border-radius: 10px; border: 1px solid #30363d; margin-bottom: 20px; }
+        input, select { width: 100%; padding: 12px; margin: 5px 0; background: #000; border: 1px solid #444; color: #fff; border-radius: 8px; font-size: 16px; box-sizing: border-box; }
+        button { width: 100%; padding: 15px; background: var(--cyan); color: #000; border: none; border-radius: 8px; font-weight: bold; margin-top: 10px; }
 
-        /* Area Filtri (Metodo pes6.es) */
-        .filter-container { background: var(--card); border: 1px solid #333; padding: 15px; border-radius: 8px; max-width: 600px; margin: 0 auto 20px; }
-        .filter-row { display: flex; gap: 10px; margin-bottom: 10px; }
-        select, input { flex: 1; padding: 12px; background: #1a202c; color: white; border: 1px solid #444; border-radius: 4px; font-size: 14px; }
+        /* Card Style pes6.es */
+        #playerCard { display: none; background: var(--card); border-radius: 12px; border: 1px solid #30363d; overflow: hidden; }
+        .header-card { display: flex; align-items: center; padding: 15px; gap: 15px; border-bottom: 1px solid #30363d; background: #000; }
+        .p-img { width: 90px; height: 120px; border: 1px solid #333; border-radius: 5px; object-fit: cover; }
+        .p-name { font-size: 20px; font-weight: 900; text-transform: uppercase; color: var(--cyan); }
 
-        /* Player Card Layout */
-        .player-card { display: none; max-width: 500px; margin: auto; background: var(--card); border: 1px solid var(--cyan); border-radius: 12px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        
-        .main-info { display: flex; gap: 20px; align-items: flex-start; border-bottom: 2px solid #333; padding-bottom: 20px; margin-bottom: 20px; }
-        .photo-box { position: relative; width: 130px; height: 170px; background: #000; border: 2px solid #444; border-radius: 8px; }
-        .photo-box img { width: 100%; height: 100%; object-fit: cover; border-radius: 6px; }
-        .overall-circle { position: absolute; top: -12px; left: -12px; width: 48px; height: 48px; background: #000; color: var(--cyan); border: 3px solid var(--cyan); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 22px; }
+        /* Tabella Stats */
+        .stats-list { display: flex; flex-direction: column; padding: 5px; }
+        .s-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 12px; border-bottom: 1px solid #21262d; }
+        .s-label { font-size: 13px; color: #8b949e; text-transform: uppercase; }
+        .s-val { font-family: monospace; font-weight: 900; font-size: 16px; width: 35px; text-align: center; border-radius: 3px; color: #000; }
 
-        .details-box h2 { font-size: 28px; margin: 0; text-transform: uppercase; color: #fff; }
-        .sub-details { font-size: 14px; margin-top: 5px; color: #aaa; font-weight: bold; }
-
-        /* Lista Statistiche (Verticale come richiesto) */
-        .stats-container { display: flex; flex-direction: column; gap: 5px; }
-        .stat-line { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 8px 15px; border-radius: 4px; }
-        .stat-name { font-size: 13px; text-transform: capitalize; color: #ccc; }
-        .stat-val { font-family: 'Courier New', monospace; font-weight: 900; font-size: 16px; width: 35px; text-align: center; border-radius: 3px; color: #000; }
-
-        /* Classi Colori */
-        .c-cyan { background: var(--cyan); } .c-green { background: var(--green); }
-        .c-yellow { background: var(--yellow); } .c-orange { background: var(--orange); } .c-red { background: var(--red); color: #fff; }
+        /* Classi Colore */
+        .c-cyan { background: var(--cyan); }
+        .c-green { background: var(--green); }
+        .c-yellow { background: var(--yellow); }
+        .c-orange { background: var(--orange); }
+        .c-red { background: var(--red); color: white; }
     </style>
 </head>
 <body>
 
-<div class="header-title">PES DATABASE 2026</div>
-
-<div class="filter-container">
-    <div class="filter-row">
-        <select id="leagueSel" onchange="updateTeams()"><option value="">Scegli Campionato</option></select>
-        <select id="teamSel" onchange="updatePlayers()"><option value="">Scegli Squadra</option></select>
-    </div>
-    <select id="playerSel" onchange="showPlayer()"><option value="">Scegli Giocatore</option></select>
-    <input type="text" id="freeSearch" placeholder="Cerca giocatore per nome..." style="margin-top:10px; width:95.5%;">
+<div class="controls">
+    <input type="number" id="idIn" placeholder="ID Giocatore (es. 108657)">
+    <input type="text" id="nameIn" placeholder="Nome Giocatore">
+    <input type="text" id="infoIn" placeholder="NAZ | RUOLO | ETÀ | ALTEZZA">
+    <input type="text" id="statsIn" placeholder="Stats separate da virgola (es. 85,90,75...)">
+    <button onclick="build()">GENERA DATABASE</button>
 </div>
 
-<div id="playerCard" class="player-card">
-    <div class="main-info">
-        <div class="photo-box">
-            <div id="ovrDisplay" class="overall-circle">--</div>
-            <img id="playerImg" src="" alt="Foto">
-        </div>
-        <div class="details-box">
-            <h2 id="playerName">---</h2>
-            <div id="playerSub" class="sub-details"></div>
-            <div id="playerBio" style="font-size: 13px; color: #888; margin-top: 10px; line-height: 1.6;"></div>
+<div id="playerCard">
+    <div class="header-card">
+        <img id="outImg" class="p-img" src="">
+        <div>
+            <div id="outName" class="p-name">---</div>
+            <div id="outInfo" style="font-size:12px; color:#ccc;">---</div>
         </div>
     </div>
-    <div id="statsList" class="stats-container"></div>
+    <div id="outStats" class="stats-list"></div>
 </div>
 
 <script>
-// L'ordine esatto delle stats che hai richiesto
-const statsOrder = [
-    "Comportamento offensivo", "Controllo palla", "Dribbling", "Possesso stretto", "Passaggio basso", "Passaggio alto", 
-    "Finalizzazione", "Colpo di testa", "Calci piazzati", "Effetto", "Velocità", "Accelerazione", "Potenza di tiro", "Elevazione", 
-    "Contatto fisico", "Equilibrio", "Resistenza", "Comportamento difensivo", "Recupero pallone", "Aggressività", 
-    "Consapevolezza portiere", "Presa portiere", "Respinta portiere", "Riflessi portiere", "Raggio d'azione portiere", 
-    "Uso piede debole", "Precisione piede debole", "Forma fisica", "Resistenza infortuni"
+const statNames = [
+    "Attacco", "Controllo Palla", "Dribbling", "Possesso Stretto", "Passaggio Basso", "Passaggio Alto",
+    "Finalizzazione", "Colpo di Testa", "Calci Piazzati", "Effetto", "Velocità", "Accelerazione", 
+    "Potenza Tiro", "Elevazione", "Contatto Fisico", "Equilibrio", "Resistenza", "Difesa", 
+    "Recupero Pallone", "Aggressività", "Portiere (Cons.)", "Presa PT", "Respinta PT", "Riflessi PT", 
+    "Rinvio PT", "Uso Piede Debole", "Prec. Piede Debole", "Forma Fisica", "Res. Infortuni"
 ];
 
-// Logica Colori Kimi (Filo e per segno)
-function getStatColor(v, name) {
-    if (name === "Resistenza infortuni") {
-        if (v >= 3) return "c-cyan";   // 3 = Verde Acqua
-        if (v == 2) return "c-yellow"; // 2 = Giallo
-        return "c-red";               // 1 = Rosso
-    }
-    if (["Uso piede debole", "Precisione piede debole", "Forma fisica"].includes(name)) {
-        if (v >= 7) return "c-cyan";
-        if (v >= 5) return "c-yellow";
+function getColor(v, label) {
+    v = parseInt(v);
+    // Logica Speciale Piede (1-4)
+    if (label.includes("Piede")) {
+        if (v >= 4) return "c-cyan";
+        if (v == 3) return "c-green";
+        if (v == 2) return "c-yellow";
         return "c-red";
     }
-    if (v >= 95) return "c-cyan";
-    if (v >= 86) return "c-green";
-    if (v >= 71) return "c-yellow";
-    if (v >= 61) return "c-orange";
+    // Logica Speciale Infortuni (1-3)
+    if (label.includes("Infortuni")) {
+        if (v >= 3) return "c-cyan";
+        if (v == 2) return "c-yellow";
+        return "c-red";
+    }
+    // Scala PES 21 (40-99)
+    if (v >= 90) return "c-cyan";
+    if (v >= 80) return "c-green";
+    if (v >= 75) return "c-yellow";
+    if (v >= 70) return "c-orange";
     return "c-red";
 }
 
-// Database Esempio (Qui caricheremo i file JSON esterni per i 5000+ giocatori)
-const database = {
-    "Campeonato Brasileiro": {
-        "Flamengo": [
-            { id: "40352", n: "GABRIEL BARBOSA", ovr: 85, naz: "Brasile", pos: "CF", eta: 29, h: 178, p: "Sinistro", st: {"Comportamento offensivo":88, "Controllo palla":82, "Dribbling":84, "Possesso stretto":80, "Passaggio basso":74, "Passaggio alto":68, "Finalizzazione":87, "Colpo di testa":75, "Calci piazzati":70, "Effetto":72, "Velocità":83, "Accelerazione":85, "Potenza di tiro":84, "Elevazione":78, "Contatto fisico":76, "Equilibrio":82, "Resistenza":80, "Comportamento difensivo":42, "Recupero pallone":45, "Aggressività":70, "Consapevolezza portiere":40, "Presa portiere":40, "Respinta portiere":40, "Riflessi portiere":40, "Raggio d'azione portiere":40, "Uso piede debole":2, "Precisione piede debole":2, "Forma fisica":6, "Resistenza infortuni":2} }
-        ]
-    }
-};
-
-const lSel = document.getElementById('leagueSel'), tSel = document.getElementById('teamSel'), pSel = document.getElementById('playerSel');
-
-function init() {
-    Object.keys(database).forEach(l => lSel.innerHTML += `<option value="${l}">${l}</option>`);
-}
-
-function updateTeams() {
-    tSel.innerHTML = '<option value="">Scegli Squadra</option>';
-    if(lSel.value) Object.keys(database[lSel.value]).forEach(t => tSel.innerHTML += `<option value="${t}">${t}</option>`);
-}
-
-function updatePlayers() {
-    pSel.innerHTML = '<option value="">Scegli Giocatore</option>';
-    if(tSel.value) database[lSel.value][tSel.value].forEach((p, i) => pSel.innerHTML += `<option value="${i}">${p.n}</option>`);
-}
-
-function showPlayer() {
-    const p = database[lSel.value][tSel.value][pSel.value];
-    if(!p) return;
+function build() {
+    const id = document.getElementById('idIn').value;
+    const stats = document.getElementById('statsIn').value.split(',');
+    
     document.getElementById('playerCard').style.display = 'block';
-    document.getElementById('playerName').innerText = p.n;
-    document.getElementById('ovrDisplay').innerText = p.ovr;
-    document.getElementById('playerImg').src = `https://pesdb.net/pes2021/images/players/${p.id}.png`;
-    document.getElementById('playerSub').innerText = `${p.naz} | ${p.pos}`;
-    document.getElementById('playerBio').innerHTML = `Età: ${p.eta} anni<br>Altezza: ${p.h} cm<br>Piede: ${p.p}`;
+    document.getElementById('outImg').src = `https://efootballhub.net/static/players/efootball26/${id}.png`;
+    document.getElementById('outName').innerText = document.getElementById('nameIn').value;
+    document.getElementById('outInfo').innerText = document.getElementById('infoIn').value;
 
-    let h = "";
-    statsOrder.forEach(s => {
-        let v = p.st[s] || 40;
-        let c = getStatColor(v, s);
-        h += `<div class="stat-line"><span class="stat-name">${s}</span><span class="stat-val ${c}">${v}</span></div>`;
+    let html = "";
+    statNames.forEach((name, i) => {
+        let val = stats[i] ? stats[i].trim() : "40";
+        html += `<div class="s-row">
+                    <span class="s-label">${name}</span>
+                    <span class="s-val ${getColor(val, name)}">${val}</span>
+                 </div>`;
     });
-    document.getElementById('statsList').innerHTML = h;
+    document.getElementById('outStats').innerHTML = html;
 }
-
-init();
 </script>
 </body>
 </html>
