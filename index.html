@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PES6 Database Clone</title>
+    <style>
+        body { background: #0d0e12; color: #e0e0e0; font-family: sans-serif; margin: 0; padding: 10px; }
+        .navbar { background: #1a1c23; padding: 15px; border-bottom: 3px solid #007bff; text-align: center; font-weight: bold; margin-bottom: 10px; }
+        .filter-box { background: #1a1c23; padding: 15px; border-radius: 5px; margin-bottom: 10px; border: 1px solid #333; }
+        input { width: 100%; padding: 12px; margin: 5px 0; background: #252836; color: white; border: 1px solid #444; border-radius: 4px; box-sizing: border-box; }
+        .player-card { display: none; background: #1a1c23; padding: 20px; border-radius: 8px; border: 2px solid #007bff; margin-top: 20px; }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-top: 15px; }
+        .stat-item { display: flex; justify-content: space-between; background: #11131a; padding: 8px; border-radius: 3px; font-size: 14px; border: 1px solid #222; }
+        .val { font-weight: bold; padding: 2px 6px; border-radius: 3px; color: #000; min-width: 30px; text-align: center; }
+        /* LA TUA SCALA COLORI */
+        .c-red { background: #FF0000; color: white; }    /* 40-60 */
+        .c-orange { background: #FF9900; }             /* 61-70 */
+        .c-yellow { background: #FFFF00; }             /* 71-85 */
+        .c-green { background: #00FF00; }              /* 86-94 */
+        .c-cyan { background: #00FFFF; }               /* 95-99 */
+    </style>
+</head>
+<body>
+<div class="navbar">PES6 DATABASE CLONE</div>
+<div class="filter-box">
+    <input type="text" id="pId" placeholder="Incolla ID pesdb (es. 108657)" onchange="loadPlayer(this.value)">
+</div>
+<div id="loader" style="display:none; text-align:center; padding:10px; color:#007bff;">⏳ Conversione in corso...</div>
+<div id="playerCard" class="player-card">
+    <h2 id="pName" style="margin:0; color:#fff; text-transform:uppercase;">-</h2>
+    <div class="stats-grid" id="statsList"></div>
+</div>
+<script>
+async function loadPlayer(id) {
+    if(!id) return;
+    document.getElementById('loader').style.display = "block";
+    try {
+        const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent('https://pesdb.net/efootball/?id=' + id)}`);
+        const json = await res.json();
+        const doc = new DOMParser().parseFromString(json.contents, 'text/html');
+        document.getElementById('pName').innerText = doc.querySelector('.player_table td:nth-child(2)').innerText;
+        let html = "";
+        doc.querySelectorAll('tr').forEach(r => {
+            const c = r.querySelectorAll('td');
+            if(c.length >= 2) {
+                const sName = c[0].innerText.trim();
+                const sVal = parseInt(c[1].innerText);
+                if(!isNaN(sVal) && sVal >= 40) {
+                    let pVal = sVal > 90 ? Math.floor(sVal * 0.94) : Math.floor(sVal * 0.96);
+                    if(sName.includes("Physical")) pVal += 7;
+                    if(sName.includes("Speed")) pVal -= 2;
+                    pVal = Math.min(99, pVal);
+                    let col = "c-red";
+                    if(pVal >= 95) col = "c-cyan"; else if(pVal >= 86) col = "c-green"; else if(pVal >= 71) col = "c-yellow"; else if(pVal >= 61) col = "c-orange";
+                    html += `<div class="stat-item"><span>${sName}</span><span class="val ${col}">${pVal}</span></div>`;
+                }
+            }
+        });
+        document.getElementById('statsList').innerHTML = html;
+        document.getElementById('playerCard').style.display = "block";
+    } catch (e) { alert("Errore caricamento."); }
+    document.getElementById('loader').style.display = "none";
+}
+</script>
+</body>
+</html>
