@@ -5,86 +5,94 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PES6 DATABASE</title>
     <style>
-        body { background: #0d0e12; color: #e0e0e0; font-family: sans-serif; padding: 10px; text-align: center; }
-        .search-box { background: #1a1c23; padding: 20px; border-radius: 8px; border: 1px solid #007bff; margin-bottom: 20px; }
-        input { width: 80%; padding: 12px; border-radius: 5px; border: none; font-size: 16px; }
-        .val { font-weight: bold; padding: 2px 8px; border-radius: 3px; color: #000; }
-        .c-cyan { background: #00FFFF; } .c-green { background: #00FF00; } 
-        .c-yellow { background: #FFFF00; } .c-orange { background: #FF9900; } 
+        body { background: #0d0e12; color: #e0e0e0; font-family: sans-serif; margin: 0; padding: 10px; }
+        .navbar { background: #1a1c23; padding: 15px; border-bottom: 3px solid #007bff; text-align: center; font-weight: bold; margin-bottom: 15px; }
+        select { width: 100%; padding: 12px; background: #252836; color: white; border: 1px solid #444; border-radius: 5px; margin-bottom: 10px; }
+        .player-list { background: #1a1c23; border-radius: 5px; overflow: hidden; margin-bottom: 20px; border: 1px solid #333; }
+        .player-item { padding: 12px; border-bottom: 1px solid #333; cursor: pointer; display: flex; justify-content: space-between; }
+        .player-item:active { background: #252836; }
+        
+        /* SCHEDA STATS */
+        .card { display: none; background: #1a1c23; padding: 15px; border-radius: 8px; border: 1px solid #007bff; }
+        .stat-row { display: flex; justify-content: space-between; padding: 6px; border-bottom: 1px solid #222; font-size: 14px; }
+        .val { font-weight: bold; padding: 2px 6px; border-radius: 3px; color: #000; min-width: 25px; text-align: center; }
+        
+        /* COLORI */
+        .c-cyan { background: #00FFFF; } .c-green { background: #00FF00; }
+        .c-yellow { background: #FFFF00; } .c-orange { background: #FF9900; }
         .c-red { background: #FF0000; color: #fff; }
-        .stat-item { display: flex; justify-content: space-between; background: #1a1c23; padding: 8px; margin: 2px; border-radius: 3px; font-size: 14px; text-align: left; }
-        #playerCard { display:none; max-width: 500px; margin: auto; }
     </style>
 </head>
 <body>
 
-<div class="search-box">
-    <h2>PES6 DB CLONE</h2>
-    <input type="number" id="pId" placeholder="Incolla ID (es. 108657)" onchange="loadPlayer(this.value)">
-    <p style="font-size:12px; color: #666;">Dopo aver scritto l'ID, clicca fuori dal box</p>
-</div>
+<div class="navbar">PES6 DB - SERIE A</div>
 
-<div id="status"></div>
+<select id="teamSelect" onchange="loadTeam()">
+    <option value="">Seleziona Squadra...</option>
+    <option value="Inter">Inter</option>
+</select>
 
-<div id="playerCard">
-    <h1 id="pName" style="color:#007bff"></h1>
-    <div id="statsList"></div>
+<div id="playerList" class="player-list"></div>
+
+<div id="playerCard" class="card">
+    <h2 id="pName" style="text-align:center; color:#fff; margin-top:0;"></h2>
+    <div id="statsContent"></div>
 </div>
 
 <script>
-async function loadPlayer(id) {
-    if(!id) return;
-    const status = document.getElementById('status');
-    const card = document.getElementById('playerCard');
-    status.innerHTML = "⏳ Connessione in corso...";
-    card.style.display = "none";
+// IL TUO DATABASE FISSO
+const database = {
+    "Inter": [
+        {
+            nome: "LAUTARO MARTINEZ",
+            stats: {"Attacco": 88, "Difesa": 45, "Equilibrio": 85, "Potenza Tiro": 82, "Velocità": 81, "Accelerazione": 84, "Tecnica": 87}
+        },
+        {
+            nome: "NICOLÒ BARELLA",
+            stats: {"Attacco": 76, "Difesa": 72, "Equilibrio": 80, "Potenza Tiro": 79, "Velocità": 83, "Accelerazione": 85, "Tecnica": 84}
+        },
+        {
+            nome: "MARCUS THURAM",
+            stats: {"Attacco": 84, "Difesa": 40, "Equilibrio": 88, "Potenza Tiro": 80, "Velocità": 89, "Accelerazione": 91, "Tecnica": 83}
+        }
+    ]
+};
 
-    // Usiamo il proxy CORS-ANYWHERE o ALLORIGINS
-    const url = `https://pesdb.net/efootball/?id=${id}`;
-    const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+function loadTeam() {
+    const team = document.getElementById('teamSelect').value;
+    const list = document.getElementById('playerList');
+    document.getElementById('playerCard').style.display = 'none';
+    list.innerHTML = "";
 
-    try {
-        const res = await fetch(proxy);
-        const json = await res.json();
-        const html = json.contents;
-
-        if(!html) throw new Error();
-
-        const doc = new DOMParser().parseFromString(html, 'text/html');
-        const name = doc.querySelector('.player_table td:nth-child(2)').innerText;
-        document.getElementById('pName').innerText = name;
-
-        let out = "";
-        doc.querySelectorAll('tr').forEach(r => {
-            const c = r.querySelectorAll('td');
-            if(c.length >= 2) {
-                const n = c[0].innerText.trim();
-                const v = parseInt(c[1].innerText);
-                if(!isNaN(v) && v >= 40) {
-                    // Conversione
-                    let p = v > 90 ? Math.floor(v * 0.94) : Math.floor(v * 0.96);
-                    if(n.includes("Physical")) p += 7;
-                    if(n.includes("Speed")) p -= 2;
-                    p = Math.min(99, p);
-
-                    // Colore
-                    let cl = "c-red";
-                    if(p >= 95) cl = "c-cyan";
-                    else if(p >= 86) cl = "c-green";
-                    else if(p >= 71) cl = "c-yellow";
-                    else if(p >= 61) cl = "c-orange";
-
-                    out += `<div class="stat-item"><span>${n}</span><span class="val ${cl}">${p}</span></div>`;
-                }
-            }
+    if(database[team]) {
+        database[team].forEach((p, index) => {
+            list.innerHTML += `<div class="player-item" onclick="showPlayer('${team}', ${index})">
+                <span>${p.nome}</span>
+                <span style="color:#007bff">➔</span>
+            </div>`;
         });
-
-        document.getElementById('statsList').innerHTML = out;
-        card.style.display = "block";
-        status.innerHTML = "✅ Caricato!";
-    } catch (e) {
-        status.innerHTML = "❌ Errore: Pesdb sta bloccando la connessione. Riprova tra 5 minuti.";
     }
+}
+
+function showPlayer(team, index) {
+    const p = database[team][index];
+    document.getElementById('pName').innerText = p.nome;
+    let html = "";
+
+    for(let s in p.stats) {
+        let v = p.stats[s];
+        let cl = "c-red";
+        if(v >= 95) cl = "c-cyan";
+        else if(v >= 86) cl = "c-green";
+        else if(v >= 71) cl = "c-yellow";
+        else if(v >= 61) cl = "c-orange";
+
+        html += `<div class="stat-row"><span>${s}</span><span class="val ${cl}">${v}</span></div>`;
+    }
+
+    document.getElementById('statsContent').innerHTML = html;
+    document.getElementById('playerCard').style.display = 'block';
+    window.scrollTo(0, document.body.scrollHeight);
 }
 </script>
 </body>
