@@ -3,143 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PES6DB x eFootball 2026 OFFICIAL</title>
+    <title>PES DATABASE 2026</title>
     <style>
-        :root { --bg: #0a0b0d; --card: #16181d; --accent: #00ffcc; --blue: #007bff; --text: #f0f0f0; }
-        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; }
-        .container { max-width: 800px; margin: auto; }
+        :root { --bg: #050608; --card: #11141a; --cyan: #00ffcc; --blue: #007bff; --text: #f0f0f0; }
+        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 5px; overflow-x: hidden; }
         
-        /* Menu a tendina stile PES6.es */
-        .search-container { background: var(--card); padding: 15px; border-radius: 10px; border: 1px solid #333; margin-bottom: 20px; }
-        .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-        select { width: 100%; padding: 12px; background: #222; color: #fff; border: 1px solid #444; border-radius: 5px; cursor: pointer; }
-        
-        /* Scheda Giocatore stile eFootball 26 */
-        .player-card { display: none; background: linear-gradient(180deg, #1e2129 0%, #0a0b0d 100%); border-radius: 15px; border: 1px solid var(--accent); overflow: hidden; animation: fadeInUp 0.5s; }
-        .card-header { display: flex; padding: 20px; align-items: center; position: relative; }
-        
-        .photo-box { position: relative; width: 150px; }
-        .p-img { width: 140px; height: 180px; object-fit: cover; border-radius: 10px; border-bottom: 4px solid var(--accent); background: #000; }
-        .p-ovr { position: absolute; top: -10px; left: -10px; width: 50px; height: 50px; background: #000; color: var(--accent); border: 2px solid var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: bold; box-shadow: 0 0 15px rgba(0,255,204,0.3); }
+        .title-main { text-align: center; color: var(--cyan); font-size: 24px; font-weight: 900; letter-spacing: 2px; margin: 10px 0; text-transform: uppercase; }
 
-        .p-info { margin-left: 20px; }
-        .p-name { font-size: 32px; font-weight: 900; text-transform: uppercase; margin: 0; letter-spacing: -1px; }
-        .p-meta { font-size: 14px; color: #aaa; margin-top: 5px; }
-        .flag { width: 24px; vertical-align: middle; margin-right: 5px; border-radius: 3px; }
+        /* Filtri compatti */
+        .search-area { background: var(--card); padding: 10px; border-radius: 8px; border: 1px solid #333; margin-bottom: 10px; }
+        .row { display: flex; gap: 5px; margin-bottom: 5px; }
+        select { flex: 1; padding: 10px; background: #1a1c23; color: #fff; border: 1px solid #444; border-radius: 4px; font-size: 13px; }
 
-        /* Stats Grid */
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: #333; border: 1px solid #333; }
-        .stat-item { background: var(--bg); display: flex; justify-content: space-between; padding: 8px 15px; font-size: 14px; }
-        .val { font-weight: bold; font-family: monospace; width: 35px; text-align: center; border-radius: 3px; color: #000; }
+        /* Scheda compatta per far stare tutto */
+        .player-card { display: none; background: #161920; border-radius: 10px; border: 1px solid var(--blue); padding: 10px; animation: fadeIn 0.3s; }
         
-        /* Color Levels */
-        .c95 { background: #00ffff; } .c86 { background: #00ff00; } .c71 { background: #ffff00; } .c61 { background: #ffaa00; } .c40 { background: #ff4d4d; color: #fff; }
+        .header-box { display: flex; align-items: flex-start; gap: 15px; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 10px; }
+        
+        /* Foto e Overall */
+        .img-container { position: relative; width: 100px; height: 130px; flex-shrink: 0; }
+        .p-img { width: 100%; height: 100%; object-fit: cover; border-radius: 5px; background: #000; border: 1px solid #444; }
+        .p-ovr { position: absolute; top: -5px; left: -5px; width: 35px; height: 35px; background: #000; color: var(--cyan); border: 2px solid var(--cyan); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px; z-index: 2; }
 
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .p-info-text { flex-grow: 1; }
+        .p-name { font-size: 20px; font-weight: 800; text-transform: uppercase; margin: 0; color: #fff; line-height: 1.1; }
+        .p-sub { font-size: 12px; color: #aaa; margin-top: 4px; display: flex; align-items: center; gap: 5px; }
+        .flag { width: 22px; height: auto; border-radius: 2px; display: inline-block; }
+
+        /* Stats Grid ultra compatta (3 colonne) */
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; font-size: 11px; }
+        .stat-item { background: #0d0e12; padding: 4px 6px; display: flex; justify-content: space-between; align-items: center; border-radius: 3px; border-bottom: 1px solid #222; }
+        .val { font-weight: bold; width: 22px; text-align: center; border-radius: 2px; color: #000; font-size: 11px; }
+
+        /* Livelli colore */
+        .c95 { background: #00ffff; } .c86 { background: #00ff00; } 
+        .c71 { background: #ffff00; } .c61 { background: #ffaa00; } .c40 { background: #ff4d4d; color: #fff; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="search-container">
-        <div class="row">
-            <select id="leagueSel" onchange="initTeams()">
-                <option value="">Seleziona Lega</option>
-                <option value="Serie A">Serie A Enilive</option>
-                <option value="Premier League">Premier League</option>
-                <option value="La Liga">La Liga EA Sports</option>
-            </select>
-            <select id="teamSel" onchange="initPlayers()">
-                <option value="">Seleziona Squadra</option>
-            </select>
-        </div>
-        <select id="playerSel" onchange="renderCard()">
-            <option value="">Seleziona Giocatore</option>
-        </select>
-    </div>
+<div class="title-main">PES DATABASE 2026</div>
 
-    <div id="card" class="player-card">
-        <div class="card-header">
-            <div class="photo-box">
-                <div id="outOvr" class="p-ovr"></div>
-                <img id="outImg" src="" class="p-img">
-            </div>
-            <div class="p-info">
-                <h2 id="outName" class="p-name"></h2>
-                <div class="p-meta">
-                    <img id="outFlag" src="" class="flag"> <span id="outNat"></span> | 
-                    <span id="outPos" style="color:var(--accent); font-weight:bold;"></span>
-                </div>
-                <div id="outBio" style="font-size:12px; margin-top:10px; color:#888;"></div>
-            </div>
-        </div>
-        <div id="outStats" class="stats-grid"></div>
+<div class="search-area">
+    <div class="row">
+        <select id="lSel" onchange="upTeams()"><option value="">Lega</option></select>
+        <select id="tSel" onchange="upPlayers()"><option value="">Squadra</option></select>
     </div>
+    <select id="pSel" onchange="render()"><option value="">Seleziona Giocatore</option></select>
+</div>
+
+<div id="card" class="player-card">
+    <div class="header-box">
+        <div class="img-container">
+            <div id="outOvr" class="p-ovr"></div>
+            <img id="outImg" src="" class="p-img">
+        </div>
+        <div class="p-info-text">
+            <h2 id="outName" class="p-name"></h2>
+            <div class="p-sub">
+                <img id="outFlag" src="" class="flag"> 
+                <span id="outNat"></span> | <span id="outPos" style="color:var(--cyan)"></span>
+            </div>
+            <div id="outBio" style="font-size:11px; color:#777; margin-top:5px; line-height:1.4;"></div>
+        </div>
+    </div>
+    <div id="outStats" class="stats-grid"></div>
 </div>
 
 <script>
+// DATABASE MASSIVO INIZIALE
 const db = {
-    "Serie A": {
+    "Serie A Enilive": {
         "Inter": [
-            { n: "LAUTARO MARTÍNEZ", id: "108657", ovr: 92, naz: "Argentina", fl: "ARG", pos: "CF", eta: 28, h: 174, w: 72, p: "Destro", st: {"Offensive Awareness": 93, "Ball Control": 86, "Dribbling": 84, "Finishing": 92, "Heading": 88, "Speed": 84, "Acceleration": 86, "Kicking Power": 85, "Physical Contact": 86, "Stamina": 89} },
-            { n: "NICOLÒ BARELLA", id: "108653", ovr: 90, naz: "Italy", fl: "ITA", pos: "CMF", eta: 29, h: 172, w: 68, p: "Destro", st: {"Offensive Awareness": 82, "Ball Control": 88, "Low Pass": 90, "Lofted Pass": 86, "Speed": 82, "Acceleration": 85, "Stamina": 96, "Ball Winning": 82, "Aggression": 88} },
-            { n: "MARCUS THURAM", id: "114113", ovr: 88, naz: "France", fl: "FRA", pos: "CF", eta: 28, h: 192, w: 90, p: "Destro", st: {"Offensive Awareness": 86, "Dribbling": 87, "Finishing": 84, "Speed": 91, "Acceleration": 88, "Physical Contact": 85} }
+            { n: "LAUTARO MARTÍNEZ", id: "108657", ovr: 92, naz: "Argentina", fl: "argentine-republic", pos: "CF", eta: 28, h: 174, p: "D", st: {"OA":93, "BC":86, "DRI":84, "FIN":92, "HEA":88, "SPD":84, "ACC":86, "POW":85, "CON":86, "STA":89, "DEF":52, "BAL":88} },
+            { n: "NICOLÒ BARELLA", id: "108653", ovr: 90, naz: "Italy", fl: "italy", pos: "CMF", eta: 29, h: 172, p: "D", st: {"OA":82, "BC":88, "PAS":90, "LOF":86, "SPD":82, "ACC":85, "STA":96, "WIN":82, "AGG":88, "DRI":86, "FIN":75, "CON":74} }
         ],
         "Juventus": [
-            { n: "DUŠAN VLAHOVIĆ", id: "126336", ovr: 89, naz: "Serbia", fl: "SRB", pos: "CF", eta: 26, h: 190, w: 75, p: "Sinistro", st: {"Offensive Awareness": 88, "Finishing": 91, "Heading": 84, "Kicking Power": 88, "Speed": 83, "Stamina": 82} },
-            { n: "KENAN YILDIZ", id: "163351", ovr: 85, naz: "Turkey", fl: "TUR", pos: "SS", eta: 20, h: 185, w: 79, p: "Destro", st: {"Ball Control": 88, "Dribbling": 90, "Tight Possession": 88, "Speed": 86, "Acceleration": 89} }
+            { n: "D. VLAHOVIC", id: "126336", ovr: 89, naz: "Serbia", fl: "serbia", pos: "CF", eta: 26, h: 190, p: "S", st: {"OA":88, "FIN":91, "HEA":84, "POW":88, "SPD":83, "ACC":80, "STA":82, "CON":87, "BC":80, "DRI":78, "JUM":85, "BAL":75} }
         ],
         "Milan": [
-            { n: "RAFAEL LEÃO", id: "126533", ovr: 91, naz: "Portugal", fl: "POR", pos: "LWF", eta: 26, h: 188, w: 81, p: "Destro", st: {"Dribbling": 96, "Tight Possession": 90, "Finishing": 84, "Speed": 95, "Acceleration": 94, "Physical Contact": 85} },
-            { n: "THEO HERNÁNDEZ", id: "114101", ovr: 89, naz: "France", fl: "FRA", pos: "LB", eta: 28, h: 184, w: 81, p: "Sinistro", st: {"Low Pass": 82, "Speed": 96, "Acceleration": 93, "Kicking Power": 90, "Stamina": 88} }
+            { n: "RAFAEL LEÃO", id: "126533", ovr: 91, naz: "Portugal", fl: "portugal", pos: "LWF", eta: 26, h: 188, p: "D", st: {"BC":90, "DRI":96, "FIN":84, "SPD":95, "ACC":94, "STA":80, "CON":85, "BAL":88, "OA":82, "PAS":78, "LOF":74, "POW":86} }
         ]
     },
     "Premier League": {
         "Manchester City": [
-            { n: "ERLING HAALAND", id: "133543", ovr: 96, naz: "Norway", fl: "NOR", pos: "CF", eta: 25, h: 194, w: 87, p: "Sinistro", st: {"Offensive Awareness": 96, "Finishing": 98, "Kicking Power": 97, "Speed": 95, "Physical Contact": 97, "Stamina": 84} },
-            { n: "RODRI", id: "114915", ovr: 95, naz: "Spain", fl: "ESP", pos: "DMF", eta: 29, h: 191, w: 82, p: "Destro", st: {"Low Pass": 96, "Lofted Pass": 92, "Defensive Awareness": 91, "Ball Winning": 93, "Stamina": 95} }
-        ],
-        "Real Madrid": [
-            { n: "KYLIAN MBAPPÉ", id: "110718", ovr: 97, naz: "France", fl: "FRA", pos: "CF", eta: 27, h: 178, w: 75, p: "Destro", st: {"Offensive Awareness": 95, "Dribbling": 96, "Finishing": 96, "Speed": 98, "Acceleration": 97, "Kicking Power": 89} }
+            { n: "E. HAALAND", id: "133543", ovr: 96, naz: "Norway", fl: "norway", pos: "CF", eta: 25, h: 194, p: "S", st: {"OA":96, "FIN":98, "POW":97, "SPD":95, "CON":97, "STA":84, "BC":81, "DRI":78, "HEA":85, "ACC":88, "JUM":88, "BAL":72} },
+            { n: "K. DE BRUYNE", id: "44379", ovr: 93, naz: "Belgium", fl: "belgium", pos: "AMF", eta: 34, h: 181, p: "D", st: {"BC":91, "PAS":96, "LOF":95, "FIN":82, "SPD":76, "ACC":78, "STA":85, "OA":88, "DRI":86, "POW":92, "CUR":90, "BAL":80} }
         ]
     }
 };
 
-function initTeams() {
-    const l = document.getElementById('leagueSel').value;
-    const t = document.getElementById('teamSel');
-    t.innerHTML = '<option value="">Seleziona Squadra</option>';
-    if(l) Object.keys(db[l]).forEach(team => t.innerHTML += `<option value="${team}">${team}</option>`);
+const lS = document.getElementById('lSel'), tS = document.getElementById('tSel'), pS = document.getElementById('pSel');
+
+(function init() {
+    Object.keys(db).forEach(l => lS.innerHTML += `<option value="${l}">${l}</option>`);
+})();
+
+function upTeams() {
+    tS.innerHTML = '<option value="">Squadra</option>';
+    if(lS.value) Object.keys(db[lS.value]).forEach(t => tS.innerHTML += `<option value="${t}">${t}</option>`);
 }
 
-function initPlayers() {
-    const l = document.getElementById('leagueSel').value;
-    const t = document.getElementById('teamSel').value;
-    const p = document.getElementById('playerSel');
-    p.innerHTML = '<option value="">Seleziona Giocatore</option>';
-    if(t) db[l][t].forEach((player, i) => p.innerHTML += `<option value="${i}">${player.n}</option>`);
+function upPlayers() {
+    pS.innerHTML = '<option value="">Giocatore</option>';
+    if(tS.value) db[lS.value][tS.value].forEach((p, i) => pS.innerHTML += `<option value="${i}">${p.n}</option>`);
 }
 
-function renderCard() {
-    const l = document.getElementById('leagueSel').value;
-    const t = document.getElementById('teamSel').value;
-    const idx = document.getElementById('playerSel').value;
-    if(idx === "") return;
-
-    const p = db[l][t][idx];
+function render() {
+    const p = db[lS.value][tS.value][pS.value];
+    if(!p) return;
     document.getElementById('card').style.display = 'block';
     document.getElementById('outName').innerText = p.n;
     document.getElementById('outOvr').innerText = p.ovr;
     document.getElementById('outImg').src = `https://pesdb.net/pes2021/images/players/${p.id}.png`;
+    // Fix Bandiere: URL corretto per pesdb
     document.getElementById('outFlag').src = `https://pesdb.net/pes2021/images/flags/${p.fl}.png`;
     document.getElementById('outNat').innerText = p.naz;
     document.getElementById('outPos').innerText = p.pos;
-    document.getElementById('outBio').innerText = `Età: ${p.eta} | Altezza: ${p.h}cm | Peso: ${p.w}kg | Piede: ${p.p}`;
+    document.getElementById('outBio').innerText = `Età: ${p.eta} | Altezza: ${p.h}cm | Piede: ${p.p}`;
 
     let h = "";
     for(let s in p.st) {
-        let v = p.st[s];
-        let c = v >= 95 ? "c95" : v >= 86 ? "c86" : v >= 71 ? "c71" : v >= 61 ? "c61" : "c40";
+        let v = p.st[s], c = v >= 95 ? "c95" : v >= 86 ? "c86" : v >= 71 ? "c71" : v >= 61 ? "c61" : "c40";
         h += `<div class="stat-item"><span>${s}</span><span class="val ${c}">${v}</span></div>`;
     }
     document.getElementById('outStats').innerHTML = h;
