@@ -14,22 +14,22 @@
         .row { display: flex; gap: 8px; margin-bottom: 8px; }
         select { flex: 1; padding: 12px; background: #1a1c23; color: #fff; border: 1px solid #444; border-radius: 5px; font-size: 14px; outline: none; }
 
-        .player-card { display: none; background: #161920; border-radius: 12px; border: 1px solid var(--blue); padding: 15px; animation: fadeIn 0.4s; }
+        .player-card { display: none; background: #161920; border-radius: 12px; border: 1px solid var(--blue); padding: 20px; animation: fadeIn 0.4s; max-width: 500px; margin: auto; }
         
-        .header-box { display: flex; align-items: center; gap: 20px; border-bottom: 2px solid #333; padding-bottom: 15px; margin-bottom: 15px; }
-        .img-container { position: relative; width: 110px; height: 145px; flex-shrink: 0; }
+        .header-box { display: flex; align-items: center; gap: 20px; border-bottom: 2px solid #333; padding-bottom: 20px; margin-bottom: 20px; }
+        .img-container { position: relative; width: 120px; height: 160px; flex-shrink: 0; }
         .p-img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; border: 2px solid #444; background: #000; }
-        .p-ovr { position: absolute; top: -8px; left: -8px; width: 40px; height: 40px; background: #000; color: var(--cyan); border: 2px solid var(--cyan); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; z-index: 5; }
+        .p-ovr { position: absolute; top: -10px; left: -10px; width: 45px; height: 45px; background: #000; color: var(--cyan); border: 2px solid var(--cyan); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 20px; z-index: 5; }
 
         .p-info-text { flex-grow: 1; }
-        .p-name { font-size: 24px; font-weight: 900; text-transform: uppercase; margin: 0; color: #fff; }
-        .p-sub { font-size: 13px; color: #aaa; margin-top: 6px; display: flex; align-items: center; gap: 8px; }
-        .flag { width: 25px; border-radius: 3px; }
+        .p-name { font-size: 26px; font-weight: 900; text-transform: uppercase; margin: 0; color: #fff; line-height: 1.1; }
+        .p-sub { font-size: 14px; color: #aaa; margin-top: 8px; font-weight: bold; }
 
-        /* Stats List (Testo intero, lista singola o doppia per leggibilità) */
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-        .stat-item { background: #0d0e12; padding: 6px 12px; display: flex; justify-content: space-between; align-items: center; border-radius: 4px; border-bottom: 1px solid #222; font-size: 12px; }
-        .val { font-weight: bold; width: 28px; text-align: center; border-radius: 3px; color: #000; font-size: 13px; font-family: monospace; }
+        /* Stats Verticali (Una sotto l'altra) */
+        .stats-list { display: flex; flex-direction: column; gap: 4px; }
+        .stat-item { background: #0d0e12; padding: 8px 15px; display: flex; justify-content: space-between; align-items: center; border-radius: 4px; border-bottom: 1px solid #222; }
+        .stat-name { font-size: 13px; color: #eee; text-transform: capitalize; }
+        .val { font-weight: bold; width: 32px; text-align: center; border-radius: 3px; color: #000; font-size: 14px; font-family: monospace; }
 
         .c95 { background: #00ffff; } .c86 { background: #00ff00; } 
         .c71 { background: #ffff00; } .c61 { background: #ffaa00; } .c40 { background: #ff4d4d; color: #fff; }
@@ -58,32 +58,31 @@
         <div class="p-info-text">
             <h2 id="outName" class="p-name"></h2>
             <div class="p-sub">
-                <img id="outFlag" src="" class="flag"> 
-                <span id="outNat"></span> | <span id="outPos" style="color:var(--cyan); font-weight:bold;"></span>
+                <span id="outNat"></span> | <span id="outPos" style="color:var(--cyan)"></span>
             </div>
-            <div id="outBio" style="font-size:12px; color:#999; margin-top:8px;"></div>
+            <div id="outBio" style="font-size:12px; color:#999; margin-top:10px; line-height:1.5;"></div>
         </div>
     </div>
-    <div id="outStats" class="stats-grid"></div>
+    <div id="outStats" class="stats-list"></div>
 </div>
 
 <script>
-// Ordine ufficiale richiesto
+// Ordine rigoroso come richiesto
 const statsOrder = [
-    "Offensive Awareness", "Ball Control", "Dribbling", "Tight Possession", "Low Pass", "Lofted Pass", 
-    "Finishing", "Heading", "Place Kicking", "Curl", "Speed", "Acceleration", "Kicking Power", "Jump", 
-    "Physical Contact", "Balance", "Stamina", "Defensive Awareness", "Ball Winning", "Aggression", 
-    "Awareness GK", "Catching GK", "Clearing GK", "Reflexes GK", "Reach", "Weak Foot Usage", 
-    "Weak Foot Accuracy", "Form", "Injury Resistance"
+    "Comportamento offensivo", "Controllo palla", "Dribbling", "Possesso stretto", "Passaggio basso", "Passaggio alto", 
+    "Finalizzazione", "Colpo di testa", "Calci piazzati", "Effetto", "Velocità", "Accelerazione", "Potenza di tiro", "Elevazione", 
+    "Contatto fisico", "Equilibrio", "Resistenza", "Comportamento difensivo", "Recupero pallone", "Aggressività", 
+    "Consapevolezza portiere", "Presa portiere", "Respinta portiere", "Riflessi portiere", "Raggio d'azione portiere", 
+    "Uso piede debole", "Precisione piede debole", "Forma fisica", "Resistenza infortuni"
 ];
 
 const db = {
     "Serie A Enilive": {
         "Inter": [
-            { n: "LAUTARO MARTÍNEZ", id: "108657", ovr: 92, naz: "Argentina", fl: "argentine-republic", pos: "CF", eta: 28, h: 174, p: "Destro", st: {"Offensive Awareness":93, "Ball Control":86, "Dribbling":84, "Tight Possession":85, "Low Pass":78, "Lofted Pass":70, "Finishing":92, "Heading":88, "Place Kicking":72, "Curl":75, "Speed":84, "Acceleration":86, "Kicking Power":85, "Jump":90, "Physical Contact":86, "Balance":88, "Stamina":89, "Defensive Awareness":52, "Ball Winning":60, "Aggression":84, "Awareness GK":40, "Catching GK":40, "Clearing GK":40, "Reflexes GK":40, "Reach":40, "Weak Foot Usage":3, "Weak Foot Accuracy":3, "Form":7, "Injury Resistance":3} }
+            { n: "LAUTARO MARTÍNEZ", id: "108657", ovr: 92, naz: "Argentina", pos: "CF", eta: 28, h: 174, p: "Destro", st: {"Comportamento offensivo":93, "Controllo palla":86, "Dribbling":84, "Possesso stretto":85, "Passaggio basso":78, "Passaggio alto":70, "Finalizzazione":92, "Colpo di testa":88, "Calci piazzati":72, "Effetto":75, "Velocità":84, "Accelerazione":86, "Potenza di tiro":85, "Elevazione":90, "Contatto fisico":86, "Equilibrio":88, "Resistenza":89, "Comportamento difensivo":52, "Recupero pallone":60, "Aggressività":84, "Consapevolezza portiere":40, "Presa portiere":40, "Respinta portiere":40, "Riflessi portiere":40, "Raggio d'azione portiere":40, "Uso piede debole":3, "Precisione piede debole":3, "Forma fisica":7, "Resistenza infortuni":3} }
         ],
-        "Juventus": [
-            { n: "D. VLAHOVIC", id: "126336", ovr: 89, naz: "Serbia", fl: "serbia", pos: "CF", eta: 26, h: 190, p: "Sinistro", st: {"Offensive Awareness":88, "Ball Control":80, "Dribbling":78, "Tight Possession":76, "Low Pass":70, "Lofted Pass":65, "Finishing":91, "Heading":84, "Place Kicking":82, "Curl":78, "Speed":83, "Acceleration":80, "Kicking Power":88, "Jump":85, "Physical Contact":87, "Balance":75, "Stamina":82, "Defensive Awareness":40, "Ball Winning":45, "Aggression":72, "Awareness GK":40, "Catching GK":40, "Clearing GK":40, "Reflexes GK":40, "Reach":40, "Weak Foot Usage":2, "Weak Foot Accuracy":2, "Form":6, "Injury Resistance":2} }
+        "Milan": [
+            { n: "RAFAEL LEÃO", id: "126533", ovr: 91, naz: "Portogallo", pos: "LWF", eta: 26, h: 188, p: "Destro", st: {"Comportamento offensivo":82, "Controllo palla":90, "Dribbling":96, "Possesso stretto":90, "Passaggio basso":78, "Passaggio alto":74, "Finalizzazione":84, "Colpo di testa":70, "Calci piazzati":68, "Effetto":80, "Velocità":95, "Accelerazione":94, "Potenza di tiro":86, "Elevazione":78, "Contatto fisico":85, "Equilibrio":88, "Resistenza":80, "Comportamento difensivo":35, "Recupero pallone":38, "Aggressività":50, "Consapevolezza portiere":40, "Presa portiere":40, "Respinta portiere":40, "Riflessi portiere":40, "Raggio d'azione portiere":40, "Uso piede debole":2, "Precisione piede debole":2, "Forma fisica":6, "Resistenza infortuni":3} }
         ]
     }
 };
@@ -111,7 +110,6 @@ function render() {
     document.getElementById('outName').innerText = p.n;
     document.getElementById('outOvr').innerText = p.ovr;
     document.getElementById('outImg').src = `https://pesdb.net/pes2021/images/players/${p.id}.png`;
-    document.getElementById('outFlag').src = `https://pesdb.net/pes2021/images/flags/${p.fl}.png`;
     document.getElementById('outNat').innerText = p.naz;
     document.getElementById('outPos').innerText = p.pos;
     document.getElementById('outBio').innerText = `Età: ${p.eta} | Altezza: ${p.h}cm | Piede: ${p.p}`;
@@ -120,7 +118,7 @@ function render() {
     statsOrder.forEach(s => {
         let v = p.st[s] || 40; 
         let c = v >= 95 ? "c95" : v >= 86 ? "c86" : v >= 71 ? "c71" : v >= 61 ? "c61" : "c40";
-        h += `<div class="stat-item"><span>${s}</span><span class="val ${c}">${v}</span></div>`;
+        h += `<div class="stat-item"><span class="stat-name">${s}</span><span class="val ${c}">${v}</span></div>`;
     });
     document.getElementById('outStats').innerHTML = h;
 }
