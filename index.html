@@ -2,74 +2,70 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PES DATABASE 2026</title>
     <style>
-        :root { --bg: #050608; --card: #11141a; --cyan: #00ffcc; --blue: #007bff; --text: #f0f0f0; }
-        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; }
+        :root { --bg: #0b0e14; --card: #151921; --cyan: #00ffff; --green: #00ff00; --yellow: #ffff00; --orange: #ffaa00; --red: #ff4d4d; --text: #e0e0e0; }
+        body { background: var(--bg); color: var(--text); font-family: 'Roboto', sans-serif; margin: 0; padding: 10px; }
         
-        .title-main { text-align: center; color: var(--cyan); font-size: 26px; font-weight: 900; margin: 15px 0; text-transform: uppercase; text-shadow: 0 0 10px rgba(0,255,204,0.5); }
+        .header-title { text-align: center; color: var(--cyan); font-size: 28px; font-weight: 900; text-transform: uppercase; margin: 20px 0; letter-spacing: 2px; }
 
-        .search-area { background: var(--card); padding: 15px; border-radius: 10px; border: 1px solid #333; margin-bottom: 15px; }
-        .row { display: flex; gap: 8px; margin-bottom: 8px; }
-        select { flex: 1; padding: 12px; background: #1a1c23; color: #fff; border: 1px solid #444; border-radius: 5px; font-size: 14px; outline: none; }
+        /* Area Filtri (Metodo pes6.es) */
+        .filter-container { background: var(--card); border: 1px solid #333; padding: 15px; border-radius: 8px; max-width: 600px; margin: 0 auto 20px; }
+        .filter-row { display: flex; gap: 10px; margin-bottom: 10px; }
+        select, input { flex: 1; padding: 12px; background: #1a202c; color: white; border: 1px solid #444; border-radius: 4px; font-size: 14px; }
 
-        .player-card { display: none; background: #161920; border-radius: 12px; border: 1px solid var(--blue); padding: 20px; animation: fadeIn 0.4s; max-width: 500px; margin: auto; }
+        /* Player Card Layout */
+        .player-card { display: none; max-width: 500px; margin: auto; background: var(--card); border: 1px solid var(--cyan); border-radius: 12px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         
-        .header-box { display: flex; align-items: center; gap: 20px; border-bottom: 2px solid #333; padding-bottom: 20px; margin-bottom: 20px; }
-        .img-container { position: relative; width: 120px; height: 160px; flex-shrink: 0; background: #000; border: 2px solid #444; border-radius: 8px; overflow: visible; }
-        .p-img { width: 100%; height: 100%; object-fit: cover; border-radius: 6px; }
-        .p-ovr { position: absolute; top: -12px; left: -12px; width: 45px; height: 45px; background: #000; color: var(--cyan); border: 2px solid var(--cyan); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 20px; z-index: 10; box-shadow: 0 0 10px var(--cyan); }
+        .main-info { display: flex; gap: 20px; align-items: flex-start; border-bottom: 2px solid #333; padding-bottom: 20px; margin-bottom: 20px; }
+        .photo-box { position: relative; width: 130px; height: 170px; background: #000; border: 2px solid #444; border-radius: 8px; }
+        .photo-box img { width: 100%; height: 100%; object-fit: cover; border-radius: 6px; }
+        .overall-circle { position: absolute; top: -12px; left: -12px; width: 48px; height: 48px; background: #000; color: var(--cyan); border: 3px solid var(--cyan); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 22px; }
 
-        .p-info-text { flex-grow: 1; }
-        .p-name { font-size: 26px; font-weight: 900; text-transform: uppercase; margin: 0; color: #fff; }
-        .p-sub { font-size: 14px; color: #aaa; margin-top: 8px; font-weight: bold; }
+        .details-box h2 { font-size: 28px; margin: 0; text-transform: uppercase; color: #fff; }
+        .sub-details { font-size: 14px; margin-top: 5px; color: #aaa; font-weight: bold; }
 
-        .stats-list { display: flex; flex-direction: column; gap: 4px; }
-        .stat-item { background: #0d0e12; padding: 8px 15px; display: flex; justify-content: space-between; align-items: center; border-radius: 4px; border-bottom: 1px solid #222; }
-        .stat-name { font-size: 13px; color: #eee; }
-        .val { font-weight: bold; width: 35px; text-align: center; border-radius: 3px; color: #000; font-size: 14px; font-family: monospace; }
+        /* Lista Statistiche (Verticale come richiesto) */
+        .stats-container { display: flex; flex-direction: column; gap: 5px; }
+        .stat-line { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 8px 15px; border-radius: 4px; }
+        .stat-name { font-size: 13px; text-transform: capitalize; color: #ccc; }
+        .stat-val { font-family: 'Courier New', monospace; font-weight: 900; font-size: 16px; width: 35px; text-align: center; border-radius: 3px; color: #000; }
 
-        /* Colorazione Stats */
-        .c90 { background: #00ffff; } /* Eccellente */
-        .c80 { background: #00ff00; } /* Ottimo */
-        .c70 { background: #ffff00; } /* Buono */
-        .c50 { background: #ffaa00; } /* Medio */
-        .c40 { background: #ff4d4d; color: #fff; } /* Scarso */
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* Classi Colori */
+        .c-cyan { background: var(--cyan); } .c-green { background: var(--green); }
+        .c-yellow { background: var(--yellow); } .c-orange { background: var(--orange); } .c-red { background: var(--red); color: #fff; }
     </style>
 </head>
 <body>
 
-<div class="title-main">PES DATABASE 2026</div>
+<div class="header-title">PES DATABASE 2026</div>
 
-<div class="search-area">
-    <div class="row">
-        <select id="lSel" onchange="upTeams()"><option value="">Lega</option></select>
-        <select id="tSel" onchange="upPlayers()"><option value="">Squadra</option></select>
+<div class="filter-container">
+    <div class="filter-row">
+        <select id="leagueSel" onchange="updateTeams()"><option value="">Scegli Campionato</option></select>
+        <select id="teamSel" onchange="updatePlayers()"><option value="">Scegli Squadra</option></select>
     </div>
-    <select id="pSel" onchange="render()"><option value="">Seleziona Giocatore</option></select>
+    <select id="playerSel" onchange="showPlayer()"><option value="">Scegli Giocatore</option></select>
+    <input type="text" id="freeSearch" placeholder="Cerca giocatore per nome..." style="margin-top:10px; width:95.5%;">
 </div>
 
-<div id="card" class="player-card">
-    <div class="header-box">
-        <div class="img-container">
-            <div id="outOvr" class="p-ovr">--</div>
-            <img id="outImg" src="" class="p-img" alt="Player Photo">
+<div id="playerCard" class="player-card">
+    <div class="main-info">
+        <div class="photo-box">
+            <div id="ovrDisplay" class="overall-circle">--</div>
+            <img id="playerImg" src="" alt="Foto">
         </div>
-        <div class="p-info-text">
-            <h2 id="outName" class="p-name"></h2>
-            <div class="p-sub">
-                <span id="outNat"></span> | <span id="outPos" style="color:var(--cyan)"></span>
-            </div>
-            <div id="outBio" style="font-size:12px; color:#999; margin-top:10px;"></div>
+        <div class="details-box">
+            <h2 id="playerName">---</h2>
+            <div id="playerSub" class="sub-details"></div>
+            <div id="playerBio" style="font-size: 13px; color: #888; margin-top: 10px; line-height: 1.6;"></div>
         </div>
     </div>
-    <div id="outStats" class="stats-list"></div>
+    <div id="statsList" class="stats-container"></div>
 </div>
 
 <script>
+// L'ordine esatto delle stats che hai richiesto
 const statsOrder = [
     "Comportamento offensivo", "Controllo palla", "Dribbling", "Possesso stretto", "Passaggio basso", "Passaggio alto", 
     "Finalizzazione", "Colpo di testa", "Calci piazzati", "Effetto", "Velocità", "Accelerazione", "Potenza di tiro", "Elevazione", 
@@ -78,67 +74,70 @@ const statsOrder = [
     "Uso piede debole", "Precisione piede debole", "Forma fisica", "Resistenza infortuni"
 ];
 
-// Funzione per assegnare i colori (Adattata anche per i valori bassi 1-8)
-function getColor(v, statName) {
-    if (["Uso piede debole", "Precisione piede debole", "Forma fisica", "Resistenza infortuni"].includes(statName)) {
-        if (v >= 7) return "c90";
-        if (v >= 5) return "c80";
-        if (v >= 3) return "c70";
-        return "c50";
+// Logica Colori Kimi (Filo e per segno)
+function getStatColor(v, name) {
+    if (name === "Resistenza infortuni") {
+        if (v >= 3) return "c-cyan";   // 3 = Verde Acqua
+        if (v == 2) return "c-yellow"; // 2 = Giallo
+        return "c-red";               // 1 = Rosso
     }
-    if (v >= 90) return "c90";
-    if (v >= 80) return "c80";
-    if (v >= 70) return "c70";
-    if (v >= 50) return "c50";
-    return "c40";
+    if (["Uso piede debole", "Precisione piede debole", "Forma fisica"].includes(name)) {
+        if (v >= 7) return "c-cyan";
+        if (v >= 5) return "c-yellow";
+        return "c-red";
+    }
+    if (v >= 95) return "c-cyan";
+    if (v >= 86) return "c-green";
+    if (v >= 71) return "c-yellow";
+    if (v >= 61) return "c-orange";
+    return "c-red";
 }
 
-const db = {
-    "Serie A Enilive": {
-        "Inter": [
-            { n: "LAUTARO MARTÍNEZ", id: "108657", ovr: 92, naz: "Argentina", pos: "CF", eta: 28, h: 174, p: "Destro", st: {"Comportamento offensivo":93, "Controllo palla":86, "Dribbling":84, "Possesso stretto":85, "Passaggio basso":78, "Passaggio alto":70, "Finalizzazione":92, "Colpo di testa":88, "Calci piazzati":72, "Effetto":75, "Velocità":84, "Accelerazione":86, "Potenza di tiro":85, "Elevazione":90, "Contatto fisico":86, "Equilibrio":88, "Resistenza":89, "Comportamento difensivo":52, "Recupero pallone":60, "Aggressività":84, "Consapevolezza portiere":40, "Presa portiere":40, "Respinta portiere":40, "Riflessi portiere":40, "Raggio d'azione portiere":40, "Uso piede debole":3, "Precisione piede debole":3, "Forma fisica":7, "Resistenza infortuni":3} }
+// Database Esempio (Qui caricheremo i file JSON esterni per i 5000+ giocatori)
+const database = {
+    "Campeonato Brasileiro": {
+        "Flamengo": [
+            { id: "40352", n: "GABRIEL BARBOSA", ovr: 85, naz: "Brasile", pos: "CF", eta: 29, h: 178, p: "Sinistro", st: {"Comportamento offensivo":88, "Controllo palla":82, "Dribbling":84, "Possesso stretto":80, "Passaggio basso":74, "Passaggio alto":68, "Finalizzazione":87, "Colpo di testa":75, "Calci piazzati":70, "Effetto":72, "Velocità":83, "Accelerazione":85, "Potenza di tiro":84, "Elevazione":78, "Contatto fisico":76, "Equilibrio":82, "Resistenza":80, "Comportamento difensivo":42, "Recupero pallone":45, "Aggressività":70, "Consapevolezza portiere":40, "Presa portiere":40, "Respinta portiere":40, "Riflessi portiere":40, "Raggio d'azione portiere":40, "Uso piede debole":2, "Precisione piede debole":2, "Forma fisica":6, "Resistenza infortuni":2} }
         ]
     }
 };
 
-const lS = document.getElementById('lSel'), tS = document.getElementById('tSel'), pS = document.getElementById('pSel');
+const lSel = document.getElementById('leagueSel'), tSel = document.getElementById('teamSel'), pSel = document.getElementById('playerSel');
 
-(function init() {
-    Object.keys(db).forEach(l => lS.innerHTML += `<option value="${l}">${l}</option>`);
-})();
-
-function upTeams() {
-    tS.innerHTML = '<option value="">Squadra</option>';
-    if(lS.value) Object.keys(db[lS.value]).forEach(t => tS.innerHTML += `<option value="${t}">${t}</option>`);
+function init() {
+    Object.keys(database).forEach(l => lSel.innerHTML += `<option value="${l}">${l}</option>`);
 }
 
-function upPlayers() {
-    pS.innerHTML = '<option value="">Giocatore</option>';
-    if(tS.value) db[lS.value][tS.value].forEach((p, i) => pS.innerHTML += `<option value="${i}">${p.n}</option>`);
+function updateTeams() {
+    tSel.innerHTML = '<option value="">Scegli Squadra</option>';
+    if(lSel.value) Object.keys(database[lSel.value]).forEach(t => tSel.innerHTML += `<option value="${t}">${t}</option>`);
 }
 
-function render() {
-    const p = db[lS.value][tS.value][pS.value];
+function updatePlayers() {
+    pSel.innerHTML = '<option value="">Scegli Giocatore</option>';
+    if(tSel.value) database[lSel.value][tSel.value].forEach((p, i) => pSel.innerHTML += `<option value="${i}">${p.n}</option>`);
+}
+
+function showPlayer() {
+    const p = database[lSel.value][tSel.value][pSel.value];
     if(!p) return;
-    document.getElementById('card').style.display = 'block';
-    document.getElementById('outName').innerText = p.n;
-    document.getElementById('outOvr').innerText = p.ovr;
-    
-    // Fix Foto: Caricamento forzato da server PESDB
-    document.getElementById('outImg').src = `https://pesdb.net/pes2021/images/players/${p.id}.png`;
-    
-    document.getElementById('outNat').innerText = p.naz;
-    document.getElementById('outPos').innerText = p.pos;
-    document.getElementById('outBio').innerText = `Età: ${p.eta} | Altezza: ${p.h}cm | Piede: ${p.p}`;
+    document.getElementById('playerCard').style.display = 'block';
+    document.getElementById('playerName').innerText = p.n;
+    document.getElementById('ovrDisplay').innerText = p.ovr;
+    document.getElementById('playerImg').src = `https://pesdb.net/pes2021/images/players/${p.id}.png`;
+    document.getElementById('playerSub').innerText = `${p.naz} | ${p.pos}`;
+    document.getElementById('playerBio').innerHTML = `Età: ${p.eta} anni<br>Altezza: ${p.h} cm<br>Piede: ${p.p}`;
 
     let h = "";
     statsOrder.forEach(s => {
-        let v = p.st[s] || 40; 
-        let c = getColor(v, s);
-        h += `<div class="stat-item"><span class="stat-name">${s}</span><span class="val ${c}">${v}</span></div>`;
+        let v = p.st[s] || 40;
+        let c = getStatColor(v, s);
+        h += `<div class="stat-line"><span class="stat-name">${s}</span><span class="stat-val ${c}">${v}</span></div>`;
     });
-    document.getElementById('outStats').innerHTML = h;
+    document.getElementById('statsList').innerHTML = h;
 }
+
+init();
 </script>
 </body>
 </html>
