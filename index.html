@@ -6,40 +6,35 @@
     <title>PES DATABASE 2026</title>
     <style>
         :root { --bg: #050608; --card: #11141a; --cyan: #00ffcc; --blue: #007bff; --text: #f0f0f0; }
-        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 5px; overflow-x: hidden; }
+        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; }
         
-        .title-main { text-align: center; color: var(--cyan); font-size: 24px; font-weight: 900; letter-spacing: 2px; margin: 10px 0; text-transform: uppercase; }
+        .title-main { text-align: center; color: var(--cyan); font-size: 26px; font-weight: 900; margin: 15px 0; text-transform: uppercase; text-shadow: 0 0 10px rgba(0,255,204,0.5); }
 
-        /* Filtri compatti */
-        .search-area { background: var(--card); padding: 10px; border-radius: 8px; border: 1px solid #333; margin-bottom: 10px; }
-        .row { display: flex; gap: 5px; margin-bottom: 5px; }
-        select { flex: 1; padding: 10px; background: #1a1c23; color: #fff; border: 1px solid #444; border-radius: 4px; font-size: 13px; }
+        .search-area { background: var(--card); padding: 15px; border-radius: 10px; border: 1px solid #333; margin-bottom: 15px; }
+        .row { display: flex; gap: 8px; margin-bottom: 8px; }
+        select { flex: 1; padding: 12px; background: #1a1c23; color: #fff; border: 1px solid #444; border-radius: 5px; font-size: 14px; outline: none; }
 
-        /* Scheda compatta per far stare tutto */
-        .player-card { display: none; background: #161920; border-radius: 10px; border: 1px solid var(--blue); padding: 10px; animation: fadeIn 0.3s; }
+        .player-card { display: none; background: #161920; border-radius: 12px; border: 1px solid var(--blue); padding: 15px; animation: fadeIn 0.4s; }
         
-        .header-box { display: flex; align-items: flex-start; gap: 15px; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 10px; }
-        
-        /* Foto e Overall */
-        .img-container { position: relative; width: 100px; height: 130px; flex-shrink: 0; }
-        .p-img { width: 100%; height: 100%; object-fit: cover; border-radius: 5px; background: #000; border: 1px solid #444; }
-        .p-ovr { position: absolute; top: -5px; left: -5px; width: 35px; height: 35px; background: #000; color: var(--cyan); border: 2px solid var(--cyan); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px; z-index: 2; }
+        .header-box { display: flex; align-items: center; gap: 20px; border-bottom: 2px solid #333; padding-bottom: 15px; margin-bottom: 15px; }
+        .img-container { position: relative; width: 110px; height: 145px; flex-shrink: 0; }
+        .p-img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; border: 2px solid #444; background: #000; }
+        .p-ovr { position: absolute; top: -8px; left: -8px; width: 40px; height: 40px; background: #000; color: var(--cyan); border: 2px solid var(--cyan); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; z-index: 5; }
 
         .p-info-text { flex-grow: 1; }
-        .p-name { font-size: 20px; font-weight: 800; text-transform: uppercase; margin: 0; color: #fff; line-height: 1.1; }
-        .p-sub { font-size: 12px; color: #aaa; margin-top: 4px; display: flex; align-items: center; gap: 5px; }
-        .flag { width: 22px; height: auto; border-radius: 2px; display: inline-block; }
+        .p-name { font-size: 24px; font-weight: 900; text-transform: uppercase; margin: 0; color: #fff; }
+        .p-sub { font-size: 13px; color: #aaa; margin-top: 6px; display: flex; align-items: center; gap: 8px; }
+        .flag { width: 25px; border-radius: 3px; }
 
-        /* Stats Grid ultra compatta (3 colonne) */
-        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; font-size: 11px; }
-        .stat-item { background: #0d0e12; padding: 4px 6px; display: flex; justify-content: space-between; align-items: center; border-radius: 3px; border-bottom: 1px solid #222; }
-        .val { font-weight: bold; width: 22px; text-align: center; border-radius: 2px; color: #000; font-size: 11px; }
+        /* Stats List (Testo intero, lista singola o doppia per leggibilità) */
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+        .stat-item { background: #0d0e12; padding: 6px 12px; display: flex; justify-content: space-between; align-items: center; border-radius: 4px; border-bottom: 1px solid #222; font-size: 12px; }
+        .val { font-weight: bold; width: 28px; text-align: center; border-radius: 3px; color: #000; font-size: 13px; font-family: monospace; }
 
-        /* Livelli colore */
         .c95 { background: #00ffff; } .c86 { background: #00ff00; } 
         .c71 { background: #ffff00; } .c61 { background: #ffaa00; } .c40 { background: #ff4d4d; color: #fff; }
 
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -64,33 +59,31 @@
             <h2 id="outName" class="p-name"></h2>
             <div class="p-sub">
                 <img id="outFlag" src="" class="flag"> 
-                <span id="outNat"></span> | <span id="outPos" style="color:var(--cyan)"></span>
+                <span id="outNat"></span> | <span id="outPos" style="color:var(--cyan); font-weight:bold;"></span>
             </div>
-            <div id="outBio" style="font-size:11px; color:#777; margin-top:5px; line-height:1.4;"></div>
+            <div id="outBio" style="font-size:12px; color:#999; margin-top:8px;"></div>
         </div>
     </div>
     <div id="outStats" class="stats-grid"></div>
 </div>
 
 <script>
-// DATABASE MASSIVO INIZIALE
+// Ordine ufficiale richiesto
+const statsOrder = [
+    "Offensive Awareness", "Ball Control", "Dribbling", "Tight Possession", "Low Pass", "Lofted Pass", 
+    "Finishing", "Heading", "Place Kicking", "Curl", "Speed", "Acceleration", "Kicking Power", "Jump", 
+    "Physical Contact", "Balance", "Stamina", "Defensive Awareness", "Ball Winning", "Aggression", 
+    "Awareness GK", "Catching GK", "Clearing GK", "Reflexes GK", "Reach", "Weak Foot Usage", 
+    "Weak Foot Accuracy", "Form", "Injury Resistance"
+];
+
 const db = {
     "Serie A Enilive": {
         "Inter": [
-            { n: "LAUTARO MARTÍNEZ", id: "108657", ovr: 92, naz: "Argentina", fl: "argentine-republic", pos: "CF", eta: 28, h: 174, p: "D", st: {"OA":93, "BC":86, "DRI":84, "FIN":92, "HEA":88, "SPD":84, "ACC":86, "POW":85, "CON":86, "STA":89, "DEF":52, "BAL":88} },
-            { n: "NICOLÒ BARELLA", id: "108653", ovr: 90, naz: "Italy", fl: "italy", pos: "CMF", eta: 29, h: 172, p: "D", st: {"OA":82, "BC":88, "PAS":90, "LOF":86, "SPD":82, "ACC":85, "STA":96, "WIN":82, "AGG":88, "DRI":86, "FIN":75, "CON":74} }
+            { n: "LAUTARO MARTÍNEZ", id: "108657", ovr: 92, naz: "Argentina", fl: "argentine-republic", pos: "CF", eta: 28, h: 174, p: "Destro", st: {"Offensive Awareness":93, "Ball Control":86, "Dribbling":84, "Tight Possession":85, "Low Pass":78, "Lofted Pass":70, "Finishing":92, "Heading":88, "Place Kicking":72, "Curl":75, "Speed":84, "Acceleration":86, "Kicking Power":85, "Jump":90, "Physical Contact":86, "Balance":88, "Stamina":89, "Defensive Awareness":52, "Ball Winning":60, "Aggression":84, "Awareness GK":40, "Catching GK":40, "Clearing GK":40, "Reflexes GK":40, "Reach":40, "Weak Foot Usage":3, "Weak Foot Accuracy":3, "Form":7, "Injury Resistance":3} }
         ],
         "Juventus": [
-            { n: "D. VLAHOVIC", id: "126336", ovr: 89, naz: "Serbia", fl: "serbia", pos: "CF", eta: 26, h: 190, p: "S", st: {"OA":88, "FIN":91, "HEA":84, "POW":88, "SPD":83, "ACC":80, "STA":82, "CON":87, "BC":80, "DRI":78, "JUM":85, "BAL":75} }
-        ],
-        "Milan": [
-            { n: "RAFAEL LEÃO", id: "126533", ovr: 91, naz: "Portugal", fl: "portugal", pos: "LWF", eta: 26, h: 188, p: "D", st: {"BC":90, "DRI":96, "FIN":84, "SPD":95, "ACC":94, "STA":80, "CON":85, "BAL":88, "OA":82, "PAS":78, "LOF":74, "POW":86} }
-        ]
-    },
-    "Premier League": {
-        "Manchester City": [
-            { n: "E. HAALAND", id: "133543", ovr: 96, naz: "Norway", fl: "norway", pos: "CF", eta: 25, h: 194, p: "S", st: {"OA":96, "FIN":98, "POW":97, "SPD":95, "CON":97, "STA":84, "BC":81, "DRI":78, "HEA":85, "ACC":88, "JUM":88, "BAL":72} },
-            { n: "K. DE BRUYNE", id: "44379", ovr: 93, naz: "Belgium", fl: "belgium", pos: "AMF", eta: 34, h: 181, p: "D", st: {"BC":91, "PAS":96, "LOF":95, "FIN":82, "SPD":76, "ACC":78, "STA":85, "OA":88, "DRI":86, "POW":92, "CUR":90, "BAL":80} }
+            { n: "D. VLAHOVIC", id: "126336", ovr: 89, naz: "Serbia", fl: "serbia", pos: "CF", eta: 26, h: 190, p: "Sinistro", st: {"Offensive Awareness":88, "Ball Control":80, "Dribbling":78, "Tight Possession":76, "Low Pass":70, "Lofted Pass":65, "Finishing":91, "Heading":84, "Place Kicking":82, "Curl":78, "Speed":83, "Acceleration":80, "Kicking Power":88, "Jump":85, "Physical Contact":87, "Balance":75, "Stamina":82, "Defensive Awareness":40, "Ball Winning":45, "Aggression":72, "Awareness GK":40, "Catching GK":40, "Clearing GK":40, "Reflexes GK":40, "Reach":40, "Weak Foot Usage":2, "Weak Foot Accuracy":2, "Form":6, "Injury Resistance":2} }
         ]
     }
 };
@@ -118,17 +111,17 @@ function render() {
     document.getElementById('outName').innerText = p.n;
     document.getElementById('outOvr').innerText = p.ovr;
     document.getElementById('outImg').src = `https://pesdb.net/pes2021/images/players/${p.id}.png`;
-    // Fix Bandiere: URL corretto per pesdb
     document.getElementById('outFlag').src = `https://pesdb.net/pes2021/images/flags/${p.fl}.png`;
     document.getElementById('outNat').innerText = p.naz;
     document.getElementById('outPos').innerText = p.pos;
     document.getElementById('outBio').innerText = `Età: ${p.eta} | Altezza: ${p.h}cm | Piede: ${p.p}`;
 
     let h = "";
-    for(let s in p.st) {
-        let v = p.st[s], c = v >= 95 ? "c95" : v >= 86 ? "c86" : v >= 71 ? "c71" : v >= 61 ? "c61" : "c40";
+    statsOrder.forEach(s => {
+        let v = p.st[s] || 40; 
+        let c = v >= 95 ? "c95" : v >= 86 ? "c86" : v >= 71 ? "c71" : v >= 61 ? "c61" : "c40";
         h += `<div class="stat-item"><span>${s}</span><span class="val ${c}">${v}</span></div>`;
-    }
+    });
     document.getElementById('outStats').innerHTML = h;
 }
 </script>
